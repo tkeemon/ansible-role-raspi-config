@@ -1,2 +1,26 @@
 ---
-# tasks file for raspi-config
+
+- include: password.yml
+  tags: ['raspi_config', 'raspi_config:password']
+
+- include: networking.yml
+  tags: ['raspi_config', 'raspi_config:networking']
+
+- include: boot.yml
+  tags: ['raspi_config', 'raspi_config:boot']
+
+- include: localization.yml
+  tags: ['raspi_config', 'raspi_config:localization']
+
+- include: interface.yml
+  tags: ['raspi_config', 'raspi_config:interface']
+
+- name: Disable raspi-config at boot
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/profile.d/raspi-config.sh
+    - /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf
+  tags: all
+

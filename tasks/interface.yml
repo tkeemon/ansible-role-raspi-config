@@ -1,0 +1,143 @@
+---
+
+
+### Camera
+
+- name: Make sure firmware is up to date (start_x.elf is found)
+  stat:
+    path: /boot/start_x.elf
+  register: start_x_found
+  failed_when: not start_x_found.stat.exists
+  when: raspi_config_enable_camera
+  tags: ['raspi_config:interface:camera']
+
+# enable camera
+
+- name: Remove startx from /boot/config.txt if it exists
+  shell: "sed /boot/config.txt -i -e \"s/^startx/#startx/\""
+  when: raspi_config_enable_camera
+  tags: ['raspi_config:interface:camera']
+
+- name: Remove fixup_file from /boot/config.txt if it exists
+  shell: "sed /boot/config.txt -i -e \"s/^fixup_file/#fixup_file/\""
+  when: raspi_config_enable_camera
+  tags: ['raspi_config:interface:camera']
+
+- name: Set start_x=1 in /boot/config.txt
+  lineinfile:
+    path: /boot/config.txt
+    line: start_x=1
+    regexp: "^start_x"
+  when: raspi_config_enable_camera
+  tags: ['raspi_config:interface:camera']
+
+- name: Get current GPU memory
+  shell: "grep -ro gpu_mem=[0-9]* /boot/config.txt | grep -o [0-9]*"
+  register: gpu_mem
+  failed_when: gpu_mem.rc > 1
+  changed_when: no
+  when: raspi_config_enable_camera
+  tags: ['raspi_config:interface:camera']
+
+- name: Set gpu_mem in /boot/config.txt if < 128
+  lineinfile:
+    path: /boot/config.txt
+    line: gpu_mem=128
+    regexp: "^gpu_mem"
+  when: raspi_config_enable_camera and (not gpu_mem.stdout or gpu_mem.stdout|int < 128)
+  tags: ['raspi_config:interface:camera']
+
+# diable camera
+
+- name: Set start_x=0 in /boot/config.txt
+  lineinfile:
+    path: /boot/config.txt
+    line: start_x=0
+    regexp: "^start_x"
+  when: not raspi_config_enable_camera
+  tags: ['raspi_config:interface:camera']
+
+### SSH
+
+# enable ssh
+- name: Generate key pairs if they don't exist
+  openssh_keypair:
+    path: /etc/ssh/ssh_host_{{ item }}_key
+    type: "{{ item }}"
+    owner: root
+    group: root
+  with_items:
+    - rsa
+    - dsa
+    - ecdsa
+    - ed25519
+  when: raspi_config_enable_ssh
+  tags: ['raspi_config:interface:ssh']
+
+- name: Turn on ssh and enable at boot
+  service:
+    name: ssh
+    state: started
+    enabled: yes
+  when: raspi_config_enable_ssh
+  tags: ['raspi_config:interface:ssh']
+
+# disable ssh
+- name: Turn off ssh and disable at boot
+  service:
+    name: ssh
+    state: stopped
+    enabled: no
+  when: not raspi_config_enable_ssh
+  tags: ['raspi_config:interface:ssh']
+
+### VNC
+
+# enable VNC
+
+- name: Make sure realvnc is installed
+  apt:
+    name: realvnc-vnc-server
+    state: present
+  when: raspi_config_enable_vnc
+  tags: ['raspi_config:interface:vnc']
+
+- name: Start VNC service and make sure it starts after reboot
+  service: 
+    name: vncserver-x11-serviced.service
+    state: started
+    enabled: yes 
+  when: raspi_config_enable_vnc
+  tags: ['raspi_config:interface:vnc']
+
+# disable VNC
+
+- name: Turn off VNC service and make sure it doesn't start after reboot
+  service:
+    name: vncserver-x11-serviced.service
+    state: stopped
+    enabled: no
+  when: not raspi_config_enable_vnc|bool
+  tags: ['raspi_config:interface:vnc']
+
+### SPI
+
+# make sure blacklist file exists for spi and i2c
+
+- name: Create file to blacklist modules
+  file:
+    path: /etc/modprobe.d/raspi-blacklist.conf
+    owner: root
+    group: root
+    state: present
+  when: not raspi_config_enable_spi or not raspi_config_enable_i2c
+  tags: ['raspi_config:interface:spi', 'raspi_config:interface:i2c']
+
+### I2C
+
+### serial
+
+### onewire
+
+### GPIO
+
