@@ -1,38 +1,46 @@
-Role Name
-=========
+# Ansible role: raspi_config
 
-A brief description of the role goes here.
+An Ansible role that duplicates functionality of the raspi-config utility.
 
-Requirements
-------------
+## TODO
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Tasks to implement:
 
-Role Variables
---------------
+- [x] Change password for `pi` user
+- [ ] Network options
+  - [x] Update hostname
+  - [x] Configure wifi
+  - [x] Predictable network interface names
+  - [ ] Network proxy settings
+- [ ] Boot options
+  - [x] Boot to desktop or cli
+  - [x] Wait for network connection before boot
+  - [ ] Splash screen or text boot
+- [ ] Localization
+  - [x] Change locale
+  - [x] Change time zone
+  - [ ] Change keyboard layout
+  - [ ] Change Wifi country
+- [ ] Interfacing
+  - [x] Camera
+  - [x] SSH
+  - [x] VNC
+  - [ ] SPI
+  - [ ] I2C
+  - [ ] Serial
+  - [ ] 1-wire
+  - [ ] Remote GPIO
+- [ ] Overclock
+- [ ] Advanced
+  - [ ] Expand filesystem
+  - [ ] Overscan
+  - [ ] Memory split
+  - [ ] Audio
+  - [ ] Resolution
+  - [ ] Screen blanking
+  - [ ] Pixel doubling
+  - [ ] GL driver
+  - [ ] Compositor
+  - [ ] Pi4 video output
+  - [ ] Overlay FS
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
