@@ -1,5 +1,7 @@
 # Ansible role: raspi_config
 
+[![CI](https://github.com/tkeemon/ansible-role-raspi-config/workflows/CI/badge.svg?branch=master)](https://github.com/tkeemon/ansible-role-raspi-config/actions?query=workflow%3ACI)
+
 An Ansible role that duplicates functionality of the raspi-config utility.
 
 ## TODO
