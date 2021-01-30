@@ -14,7 +14,7 @@
   changed_when: no
   when: current_lang.stdout != raspi_config_locale
   tags: ['raspi_config:localization:locale']
-  
+
 - name: Update encoding in /etc/locale.gen
   lineinfile:
     path: /etc/locale.gen
@@ -73,7 +73,6 @@
   tags: ['raspi_config:localization:timezone']
 
 
-#- name: Changing keyboard layout
+# - name: Changing keyboard layout
 
-#- name: Changing wifi country
-
+# - name: Changing wifi country

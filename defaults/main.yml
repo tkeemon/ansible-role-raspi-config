@@ -15,10 +15,10 @@ raspi_config_enable_predictable_net_names: false
 ### boot.yml
 
 # boot behavior should be one of:
-#	console
-#	console_autologin
-#	desktop
-#	desktop_autologin
+#    console
+#    console_autologin
+#    desktop
+#    desktop_autologin
 raspi_config_boot_behavior: console
 raspi_config_boot_autologin_user: pi
 
@@ -29,22 +29,21 @@ raspi_config_wait_on_network: false
 
 raspi_config_locale: en_GB.UTF-8
 raspi_config_time_zone: Europe/London
-#raspi_config_keyboard_layout: 
+# raspi_config_keyboard_layout:
 
 # 2 letter country codes can be found in the first column
 # 	of: /usr/share/zoneinfo/iso3166.tab
 raspi_config_wifi_country: GB
 raspi_config_wifi_ssid: ""
 raspi_config_wifi_password: ""
-#raspi_config_wifi_interface: wlan0
+# raspi_config_wifi_interface: wlan0
 
 ### interface.yml
 
 raspi_config_enable_camera: false
 
 # default for ssh should be 'false', but I don't want to risk losing ssh access over a typo
-raspi_config_enable_ssh: true  
+raspi_config_enable_ssh: true
 raspi_config_enable_vnc: false
 raspi_config_enable_spi: false
 raspi_config_enable_i2c: false
-

@@ -84,4 +84,3 @@
   when: not raspi_config_enable_predictable_net_names
   notify: Reboot
   tags: ['raspi_config:networking:predictable_net_names']
-

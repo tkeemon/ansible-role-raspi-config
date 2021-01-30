@@ -1,18 +1,18 @@
 ---
 
-### boot behavior 
+### boot behavior
 # all of the tasks here are intertwined
 # valid values for raspi_config_boot_behavior include:
-#	console
-#	console_autologin
-#	desktop
-#	desktop_autologin
+#    console
+#    console_autologin
+#    desktop
+#    desktop_autologin
 
 - name: Set non-graphical boot
   shell: "systemctl set-default multi-user.target"
   when: raspi_config_boot_behavior == 'console' or raspi_config_boot_behavior == 'console_autologin'
   tags: ['raspi_config:boot:behavior']
-  
+
 - name: Make sure lightdm is installed for graphical boot
   apt:
     name: lightdm
@@ -72,7 +72,7 @@
 # enable wait on network
 
 - name: Create directory for conf file
-  file: 
+  file:
     path: /etc/systemd/system/dhcpcd.service.d/
     owner: root
     group: root
@@ -81,7 +81,7 @@
   when: raspi_config_wait_on_network
   tags: ['raspi_config:boot:wait_on_network']
 
-- name: Copy dhcpcd service conf 
+- name: Copy dhcpcd service conf
   copy:
     src: files/boot/wait.conf
     dest: /etc/systemd/system/dhcpcd.service.d/wait.conf
@@ -93,11 +93,10 @@
 # disable wait on network
 
 - name: Remove dhcpcd service conf
-  file: 
+  file:
     path: /etc/systemd/system/dhcpcd.service.d/wait.conf
     state: absent
   when: not raspi_config_wait_on_network
   tags: ['raspi_config:boot:wait_on_network']
 
 ### splash screen
-

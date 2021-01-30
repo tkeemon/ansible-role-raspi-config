@@ -1,6 +1,5 @@
 ---
 
-
 ### Camera
 
 - name: Make sure firmware is up to date (start_x.elf is found)
@@ -103,10 +102,10 @@
   tags: ['raspi_config:interface:vnc']
 
 - name: Start VNC service and make sure it starts after reboot
-  service: 
+  service:
     name: vncserver-x11-serviced.service
     state: started
-    enabled: yes 
+    enabled: yes
   when: raspi_config_enable_vnc
   tags: ['raspi_config:interface:vnc']
 
@@ -140,4 +139,3 @@
 ### onewire
 
 ### GPIO
-
