@@ -48,6 +48,7 @@
     dest: /etc/systemd/system/getty@tty1.service.d/autologin.conf
     owner: root
     group: root
+    mode: 0644
   when: raspi_config_boot_behavior == 'console_autologin' or raspi_config_boot_behavior == 'desktop_autologin'
   tags: ['raspi_config:boot:behavior']
 
@@ -76,6 +77,7 @@
     path: /etc/systemd/system/dhcpcd.service.d/
     owner: root
     group: root
+    mode: 0755
     state: directory
     recurse: yes
   when: raspi_config_wait_on_network
@@ -87,6 +89,7 @@
     dest: /etc/systemd/system/dhcpcd.service.d/wait.conf
     owner: root
     group: root
+    mode: 0644
   when: raspi_config_wait_on_network
   tags: ['raspi_config:boot:wait_on_network']
 

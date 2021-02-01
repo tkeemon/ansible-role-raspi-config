@@ -4,6 +4,7 @@
 
 - name: Check current hostname
   shell: "cat /etc/hostname"
+  changed_when: no
   register: hostname
   tags: ['raspi_config:networking:hostname']
 
@@ -34,6 +35,7 @@
     dest: /etc/wpa_supplicant/wpa_supplicant.conf
     owner: root
     group: root
+    mode: 0600
   register: wifi_updated
   tags: ['raspi_config:networking:wifi']
 
