@@ -36,16 +36,8 @@
     owner: root
     group: root
     mode: 0600
-  register: wifi_updated
+  notify: Restart wpa_supplicant
   tags: ['raspi_config:networking:wifi']
-
-- name: Restart wpa_supplicant
-  service:
-    name: wpa_supplicant
-    state: restarted
-  when: wifi_updated.changed
-  tags: ['raspi_config:networking:wifi']
-
 
 ### Predictable network interface names
 

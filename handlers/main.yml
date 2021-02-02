@@ -2,3 +2,8 @@
 
 - name: Reboot
   reboot:
+
+- name: Restart wpa_supplicant
+  service:
+    name: wpa_supplicant
+    state: restarted
