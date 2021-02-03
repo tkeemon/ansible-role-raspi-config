@@ -1,18 +1,18 @@
 ---
 
-- include: password.yml
+- import_tasks: password.yml
   tags: ['raspi_config', 'raspi_config:password']
 
-- include: networking.yml
+- import_tasks: networking.yml
   tags: ['raspi_config', 'raspi_config:networking']
 
-- include: boot.yml
+- import_tasks: boot.yml
   tags: ['raspi_config', 'raspi_config:boot']
 
-- include: localization.yml
+- import_tasks: localization.yml
   tags: ['raspi_config', 'raspi_config:localization']
 
-- include: interface.yml
+- import_tasks: interface.yml
   tags: ['raspi_config', 'raspi_config:interface']
 
 - name: Disable raspi-config at boot
