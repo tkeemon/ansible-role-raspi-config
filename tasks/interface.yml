@@ -128,7 +128,7 @@
     path: /etc/modprobe.d/raspi-blacklist.conf
     owner: root
     group: root
-    state: present
+    state: touch
     mode: 0644
   when: not raspi_config_enable_spi or not raspi_config_enable_i2c
   tags: ['raspi_config:interface:spi', 'raspi_config:interface:i2c']
