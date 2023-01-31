@@ -1,30 +1,6 @@
 ---
 
-### Updating hostname
 
-- name: Check current hostname
-  shell: "cat /etc/hostname"
-  changed_when: no
-  register: hostname
-  tags: ['raspi_config:networking:hostname']
-
-- name: Change hostname
-  lineinfile:
-    path: /etc/hostname
-    line: "{{ raspi_config_hostname }}"
-    regexp: ".*"
-  when: hostname.stdout != raspi_config_hostname
-  notify: Reboot
-  tags: ['raspi_config:networking:hostname']
-
-- name: Update hostname in /etc/hosts
-  lineinfile:
-    path: /etc/hosts
-    line: "127.0.1.1\t{{ raspi_config_hostname }}"
-    regexp: "^127.0.1.1.*{{ hostname.stdout }}"
-  when: hostname.stdout != raspi_config_hostname
-  notify: Reboot
-  tags: ['raspi_config:networking:hostname']
 
 
 ### Updating wifi
@@ -39,42 +15,3 @@
   notify: Restart wpa_supplicant
   tags: ['raspi_config:networking:wifi']
 
-### Predictable network interface names
-
-# enable predictable names
-
-- name: Delete symlink to enable predictable network interface names
-  file:
-    path: /etc/systemd/network/99-default.link
-    state: absent
-    force: yes
-  when: raspi_config_enable_predictable_net_names
-  notify: Reboot
-  tags: ['raspi_config:networking:predictable_net_names']
-
-- name: See if predictable names are disabled in cmdline.txt
-  shell: "grep -q \"net.ifnames=0\" /boot/cmdline.txt"
-  changed_when: no
-  register: cmdline_predictable_names
-  when: raspi_config_enable_predictable_net_names
-  tags: ['raspi_config:networking:predictable_net_names']
-
-- name: Remove net.ifnames from /booot/cmdline.txt
-  shell: "sed -i /boot/cmdline.txt -e \"s/net.ifnames=0 *//\""
-  when: raspi_config_enable_predictable_net_names and raspi_config_enable_predictable_net_names.rc == 0
-  notify: Reboot
-  tags: ['raspi_config:networking:predictable_net_names']
-
-# disable predictable names
-
-- name: Create symlink to disable predictable network interface names
-  file:
-    path: /etc/systemd/network/99-default.link
-    src: /dev/null
-    owner: root
-    group: root
-    state: link
-    force: yes
-  when: not raspi_config_enable_predictable_net_names
-  notify: Reboot
-  tags: ['raspi_config:networking:predictable_net_names']

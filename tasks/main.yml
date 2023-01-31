@@ -1,13 +1,13 @@
 ---
 
-- import_tasks: password.yml
-  tags: ['raspi_config', 'raspi_config:password']
+- import_tasks: system.yml
+  tags: ['raspi_config', 'raspi_config:system']
 
-- import_tasks: networking.yml
+- import_tasks: display.yml
   tags: ['raspi_config', 'raspi_config:networking']
 
-- import_tasks: boot.yml
-  tags: ['raspi_config', 'raspi_config:boot']
+- import_tasks: interface.yml
+  tags: ['raspi_config', 'raspi_config:interface']
 
 - import_tasks: localization.yml
   tags: ['raspi_config', 'raspi_config:localization']

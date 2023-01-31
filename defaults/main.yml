@@ -1,15 +1,32 @@
 ---
 
-### password.yml
+### system.yml
 
+# wireless LAN
+
+# audio
+
+# password
 raspi_config_user: pi
 raspi_config_password: raspberry
 
+# hostname
+raspi_config_hostname: raspberrypi
+raspi_config_enable_predictable_net_names: false
+
+
+# auto login
+
+# network at boot 
+
+# splash screen
+raspi_config_enable_boot_splash_screen: true
+
+# power LED
+raspi_config_power_led_flash_during_activity: false
 
 ### networking.yml
 
-raspi_config_hostname: raspberrypi
-raspi_config_enable_predictable_net_names: false
 
 
 ### boot.yml

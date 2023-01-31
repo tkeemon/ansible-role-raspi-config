@@ -39,8 +39,52 @@ vars:
   - raspi_config:advanced:xcompmgr
   - raspi_config:advanced:xcompmgr:disable
 
-# network interface names 
-# TODO: get predictable net_name code from networking.yml 
+### Predictable network interface names
+# enable predictable names
+
+- name: Delete symlink to enable predictable network interface names
+  file:
+    path: /etc/systemd/network/99-default.link
+    state: absent
+    force: yes
+  when: raspi_config_enable_predictable_net_names
+  notify: Reboot
+  tags: 
+  - raspi_config:advanced:predictable_net_names
+  - raspi_config:advanced:predictable_net_names:enable
+
+- name: See if predictable names are disabled in cmdline.txt
+  shell: "grep -q \"net.ifnames=0\" /boot/cmdline.txt"
+  changed_when: no
+  register: cmdline_predictable_names
+  when: raspi_config_enable_predictable_net_names
+  tags: 
+  - raspi_config:advanced:predictable_net_names
+  - raspi_config:advanced:predictable_net_names:enable
+
+- name: Remove net.ifnames from /booot/cmdline.txt
+  shell: "sed -i /boot/cmdline.txt -e \"s/net.ifnames=0 *//\""
+  when: raspi_config_enable_predictable_net_names and raspi_config_enable_predictable_net_names.rc == 0
+  notify: Reboot
+  tags: 
+  - raspi_config:advanced:predictable_net_names
+  - raspi_config:advanced:predictable_net_names:enable
+
+# disable predictable names
+
+- name: Create symlink to disable predictable network interface names
+  file:
+    path: /etc/systemd/network/99-default.link
+    src: /dev/null
+    owner: root
+    group: root
+    state: link
+    force: yes
+  when: not raspi_config_enable_predictable_net_names
+  notify: Reboot
+  tags: 
+  - raspi_config:advanced:predictable_net_names
+  - raspi_config:advanced:predictable_net_names:disable
 
 # network proxy settings 
 # TODO: figure out how to order these
