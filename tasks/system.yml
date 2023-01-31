@@ -1,7 +1,4 @@
-vars:
-- raspi_config_enable_boot_splash_screen: true
-- raspi_config_power_led_flash_during_activity: false
-
+---
 
 # wireless LAN
 # TODO: get from networking 
@@ -10,11 +7,41 @@ vars:
 # TODO: figure out how audio works 
 
 # password 
-# TODO: move from password.yml 
+- name: Change user's password
+  user:
+    name: "{{ raspi_config_user }}"
+    password: "{{ raspi_config_password | password_hash('sha512') }}"
+  tags:
+  - taspi_config:system:password
 
-# hostname 
-# TODO: move from 
+### Updating hostname
 
+- name: Check current hostname
+  shell: "cat /etc/hostname"
+  changed_when: no
+  register: hostname
+  tags: 
+  - raspi_config:system:hostname
+
+- name: Change hostname
+  lineinfile:
+    path: /etc/hostname
+    line: "{{ raspi_config_hostname }}"
+    regexp: ".*"
+  when: hostname.stdout != raspi_config_hostname
+  notify: Reboot
+  tags: 
+  - raspi_config:system:hostname
+
+- name: Update hostname in /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.1.1\t{{ raspi_config_hostname }}"
+    regexp: "^127.0.1.1.*{{ hostname.stdout }}"
+  when: hostname.stdout != raspi_config_hostname
+  notify: Reboot
+  tags: 
+  - raspi_config:system:hostname
 # boot / autologin 
 
 # network at boot 
