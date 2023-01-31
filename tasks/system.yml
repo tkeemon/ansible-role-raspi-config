@@ -1,0 +1,51 @@
+vars:
+- raspi_config_enable_boot_splash_screen: true
+- raspi_config_power_led_flash_during_activity: false
+
+
+# wireless LAN
+# TODO: get from networking 
+
+# audio 
+# TODO: figure out how audio works 
+
+# password 
+# TODO: move from password.yml 
+
+# hostname 
+# TODO: move from 
+
+# boot / autologin 
+
+# network at boot 
+
+# splash screen
+
+- name: Enable splash screen at boot
+  shell: raspi-config nonint do_boot_splash 0
+  when: raspi_config_enable_boot_splash_screen
+  tags: 
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:enable
+
+- name: Disable splash screen at boot
+  shell: raspi-config nonint do_boot_splash 1
+  when: not raspi_config_enable_boot_splash_screen
+  tags: 
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:disable
+
+# power LED
+- name: Power LED enable flash during activity 
+  shell: raspi-config nonint do_leds 0
+  when: raspi_config_power_led_flash_during_activity
+  tags: 
+  - raspi_config:system:power_led
+  - raspi_config:system:power_led:enable
+  
+- name: Power LED disable flash during activity 
+  shell: raspi-config nonint do_leds 0
+  when: not raspi_config_power_led_flash_during_activity
+  tags: 
+  - raspi_config:system:power_led
+  - raspi_config:system:power_led:disable

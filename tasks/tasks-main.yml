@@ -1,0 +1,143 @@
+# useful examples of running as CLI
+- https://forums.raspberrypi.com/viewtopic.php?t=21632
+
+
+# example 
+- name: task name 
+  file:
+    path: /path/to/file
+    state: absent|present 
+  when: CONDITION 
+  tags: [raspi_config:CATEGORY:TASK_NAME]
+
+# template
+- name: 
+  shell: raspi-config nonint METHOD_NAME
+  when: 
+  tags: [raspi_config]
+
+##### WORK ####
+
+# main 
+# need to rely on the executable for now
+- name: Make sure raspi_config file exists 
+  file:
+    path: 
+    state: present 
+  tags: all
+
+
+
+# keyboard layout 
+vars: 
+- raspi_config_keyboard_layout: "?"  # TODO: figure out layouts
+
+- name: Set keyboard layout 
+shell: raspi-config nonint do_configure_keyboard {{ RASPI_CONFIG_KEYBOARD_LAYOUT }}
+tags: 
+- raspi_config:internationalization:keyboard
+
+
+# wifi country 
+vars: 
+# two letter country code 
+#   should be accessible here: /usr/share/zoneinfo/iso3166.tab
+- raspi_config_wifi_country: US  # TODO find default
+
+- name: Set WIFI country 
+shell: raspi_config nonint do_wifi_country {{ raspi_config_wifi_country }}
+tags: 
+- raspi_config:internationalization:wifi_country
+
+
+# interfaces 
+vars: 
+- raspi_config_enable_onewire: false
+- raspi_config_enable_remote_gpio: false
+
+- name: Enable SPI 
+  shell: raspi_config nonint do_spi 0
+  when: raspi_config_enable_spi
+  tags:
+  - raspi_config:interface:spi 
+  - raspi_config:interface:spi:enable
+
+- name: Disable SPI 
+  shell: raspi_config nonint do_spi 1
+  when: not raspi_config_enable_spi
+  tags:
+  - raspi_config:interface:spi 
+  - raspi_config:interface:spi:enable
+
+- name: Enable I2C 
+  shell: raspi_config nonint do_i2c 0
+  when: raspi_config_enable_i2c
+  tags:
+  - raspi_config:interface:i2c
+  - raspi_config:interface:i2c:enable
+
+- name: Disable I2C 
+  shell: raspi_config nonint do_i2c 1
+  when: not raspi_config_enable_i2c
+  tags:
+  - raspi_config:interface:i2c 
+  - raspi_config:interface:i2c:enable
+
+# TODO: see if this properly tells us when a change occurred and a reboot is needed
+- name: Enable serial 
+  shell: raspi_config nonint do_serial 0 
+  when: raspi_config_enable_serial 
+  tags: 
+  - raspi_config:interface:serial
+  - raspi_config:interface:serial:enable
+
+- name: Disable serial 
+  shell: raspi_config nonint do_serial 1
+  when: not raspi_config_enable_serial 
+  tags: 
+  - raspi_config:interface:serial
+  - raspi_config:interface:serial:disable
+
+- name: Enable 1-Wire
+  shell: raspi_config nonint do_onewire 0 
+  when: raspi_config_enable_onewire 
+  tags:
+  - raspi_config:interface:onewire
+  - raspi_config:interface:onewire:enable
+
+- name: Disable 1-Wire
+  shell: raspi_config nonint do_onewire 1
+  when: not raspi_config_enable_onewire 
+  tags:
+  - raspi_config:interface:onewire
+  - raspi_config:interface:onewire:disable
+
+- name: Enable remote GPIO
+  shell: raspi_config nonint do_rgpio 0 
+  when: raspi_config_enable_remote_gpio
+  tags:
+  - raspi_config:interface:remote_gpio
+  - raspi_config:interface:remote_gpio:enable
+
+- name: Disable remote GPIO
+  shell: raspi_config nonint do_rgpio 1
+  when: not raspi_config_enable_remote_gpio
+  tags:
+  - raspi_config:interface:remote_gpio
+  - raspi_config:interface:remote_gpio:disable
+
+
+####### performance.yml
+# TODO: need to add "performance.yml" task file to main.yml
+# Se: performance.yml
+
+
+
+##### system.yml 
+# TODO: add system.yml to main.yml
+# TODO: remove password.yml from main.yml
+# TODO: remove networking.yml from main.yml (need to verify all tasks are moved to correct locations)
+# See: system.yml
+
+#   it looks like some of these probably exist in networking.yml 
+

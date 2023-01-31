@@ -1,0 +1,55 @@
+### overclock 
+# raspi-config nonint do_overclock None|Modest|Medium|High|Turbo
+vars: 
+# valid values are: None|Modest|Medium|High|Turbo
+- raspi_config_overclock_settings: None 
+# valid values: 16|32|64|128|256
+- raspi_config_gpu_memory: 16  # TODO: find default value 
+- raspi_config_enable_overlayfs: false 
+- raspi_config_enable_gpio_fan: false  # TODO: make sure this is the correct default
+
+- name: Set overclock settings {{ raspi_config_overclock_settings }}
+  shell: raspi-config nonint do_overclock {{ raspi_config_overclock_settings }}
+  notify: reboot
+  tags: 
+  - raspi_config:performance:overclock
+  shell: raspi-config nonint do_memory_split new_mem
+
+# gpu memory 
+- name: Set GPU/CPU memory split 
+  shell: raspi-config nonint do_memory_split {{ raspi_config_gpu_memory }}
+  notify: reboot  # TODO: see if 'changed' accurately indicates that we need to reboot
+  tags:
+  - raspi_config:performance:gpu_memory
+
+# overlay fs 
+- name: Enable Overlay File System
+  shell: raspi-config nonint enable_overlayfs
+  notify: reboot  # TODO: check this
+  when: raspi_config_enable_overlayfs
+  tags: 
+  - raspi_config:performance:overlayfs
+  - raspi_config:performance:overlayfs:enable
+
+- name: Disable Overlay File System
+  shell: raspi-config nonint disable_overlayfs
+  notify: reboot  # TODO: check this
+  when: not raspi_config_enable_overlayfs
+  tags: 
+  - raspi_config:performance:overlayfs
+  - raspi_config:performance:overlayfs:disable
+
+# fan 
+- name: Enable GPIO fan 
+  shell: raspi-config nonint do_fan 0
+  when: raspi_config_enable_gpio_fan
+  tags: 
+  - raspi_config:performance:fan
+  - raspi_config:performance:fan:enable
+
+- name: Disable GPIO fan 
+  shell: raspi-config nonint do_fan 1
+  when: not raspi_config_enable_gpio_fan
+  tags: 
+  - raspi_config:performance:fan
+  - raspi_config:performance:fan:disable

@@ -1,0 +1,116 @@
+vars: 
+- raspi_config_enable_xcompmgr: false  # TODO: find correct default 
+- raspi_config_use_latest_boot_rom_software: true  # TODO: find correct default 
+- raspi_config_enable_glamor: false
+- raspi_config_enable_wayland: false 
+# valid options: 'dhcpcd', 'NetworkManager'
+- raspi_config_network_config_tool: NetworkManager  # TODO: find correct default
+
+# expand filesystem 
+- name: Expand root filesystem 
+  shell: raspi-config do_expand_rootfs 
+  notify: reboot 
+  tags: 
+  - raspi_config:advanced:expand_filesystem
+
+# GL driver  # TODO: finish this 
+#   - might not be compatible with CLI options 
+#   - only available on certain Pis
+- name: Enable experimental desktop GL driver
+  shell: raspi-config do_gldriver 
+  notify: reboot  # TODO: see if this behaves correctly
+
+- name: Disable experimental desktop GL driver (use legacy driver)
+
+# compositor 
+- name: Enable xcompmgr composition manager 
+  shell: raspi-config do_xcompmgr 0
+  notify: reboot  # todo: make sure this works
+  when: raspi_config_enable_xcompmgr
+  tags: 
+  - raspi_config:advanced:xcompmgr
+  - raspi_config:advanced:xcompmgr:enable
+
+- name: Disable xcompmgr composition manager
+  shell: raspi-config do_xcompmgr 1
+  notify: reboot  # todo: make sure this works
+  when: not raspi_config_enable_xcompmgr
+  tags: 
+  - raspi_config:advanced:xcompmgr
+  - raspi_config:advanced:xcompmgr:disable
+
+# network interface names 
+# TODO: get predictable net_name code from networking.yml 
+
+# network proxy settings 
+# TODO: figure out how to order these
+- name: Update HTTP proxy address
+  shell: raspi-config nonint do_proxy http {{ raspi_config_http_proxy_address }}
+  when: 
+  tags: 
+  - raspi_config:advanced:proxy
+
+# boot order 
+# TODO: handle three cases: sd card, usb stick, network 
+
+# boot loader
+# TODO: figure out how to handle resetting defaults  
+- name: Use the latest version of the boot ROM software 
+  shell: raspi-config do_boot_rom E1
+  when: raspi_config_use_latest_boot_rom_software
+  tags: 'test'
+
+- name: Use the factory default boot ROM software
+
+
+# glamor (graphics acceleration)
+# TODO: only available for some Pis
+- name: Enable glamor graphics acceleration 
+  shell: raspi-config nonint do_glamor 0
+  notify: reboot  # TODO: make sure this works 
+  when: raspi_config_enable_glamor
+  tags: 
+  - raspi_config:advanced:glamor 
+  - raspi_config:advanced:glamor:enable 
+
+- name: Disable glamor graphics acceleration 
+  shell: raspi-config nonint do_glamor 1
+  notify: reboot  # TODO: make sure this works 
+  when: not raspi_config_enable_glamor
+  tags: 
+  - raspi_config:advanced:glamor 
+  - raspi_config:advanced:glamor:disable 
+
+# wayland 
+- name: Enable experimental Wayland backend
+  shell: raspi-config do_wayland 0
+  notify: reboot  # TOOD: make sure this works 
+  when: raspi_config_enable_wayland
+  tags: 
+  - raspi_config:advanced:wayland
+  - raspi_config:advanced:wayland:enable
+
+- name: Disable experimental Wayland backend
+  shell: raspi-config do_wayland 1
+  notify: reboot  # TOOD: make sure this works 
+  when: not raspi_config_enable_wayland
+  tags: 
+  - raspi_config:advanced:wayland
+  - raspi_config:advanced:wayland:disable
+
+# network config 
+- name: Set NetworkManager as network configuration tool
+  shell: raspi-config nonint do_netconf 2
+  notify: reboot  # TODO: make sure this works 
+  when: raspi_config_network_config_tool == 'NetworkManager'
+  tags: 
+  - raspi_config:advanced:network_config
+  - raspi_config:advanced_network_config:network_manager
+
+- name: Set dhcpcd as network configuration tool
+  shell: raspi-config nonint do_netconf 1
+  notify: reboot  # TODO: make sure this works 
+  when: raspi_config_network_config_tool == 'dhcpcd'
+  tags: 
+  - raspi_config:advanced:network_config
+  - raspi_config:advanced_network_config:dhcpcd
