@@ -25,12 +25,6 @@ raspi_config_enable_boot_splash_screen: true
 # power LED
 raspi_config_power_led_flash_during_activity: false
 
-### networking.yml
-
-
-
-### boot.yml
-
 # boot behavior should be one of:
 #    console
 #    console_autologin
@@ -41,6 +35,9 @@ raspi_config_boot_autologin_user: pi
 
 raspi_config_wait_on_network: false
 
+### display.yml
+
+### interface.yml
 
 ### localization.yml
 
@@ -49,7 +46,7 @@ raspi_config_time_zone: Europe/London
 # raspi_config_keyboard_layout:
 
 # 2 letter country codes can be found in the first column
-# 	of: /usr/share/zoneinfo/iso3166.tab
+#    of: /usr/share/zoneinfo/iso3166.tab
 raspi_config_wifi_country: GB
 raspi_config_wifi_ssid: ""
 raspi_config_wifi_password: ""
