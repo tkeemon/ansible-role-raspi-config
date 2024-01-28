@@ -12,7 +12,7 @@
     name: "{{ raspi_config_user }}"
     password: "{{ raspi_config_password | password_hash('sha512') }}"
   tags:
-  - taspi_config:system:password
+  - raspi_config:system:password
 
 ### Updating hostname
 
