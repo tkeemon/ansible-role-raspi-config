@@ -1,3 +1,4 @@
 ansible
 ansible-lint
 yamllint 
+passlib  # to change password when running playbook from Mac
