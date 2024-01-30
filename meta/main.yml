@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: raspi_config
-  author: TJ Keemon
+  author: tkeemon
   description: An Ansible role to automate the changes made by `raspi-config`.
   license: MIT
   min_ansible_version: 2.1

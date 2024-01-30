@@ -1,18 +1,30 @@
 ---
 
-# wireless LAN
-# TODO: get from networking 
-
-# audio 
-# TODO: figure out how audio works 
-
-# password 
+# "S1 Wireless LAN" "Enter SSID and passphrase" \
+# "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
+# "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password
   user:
     name: "{{ raspi_config_user }}"
     password: "{{ raspi_config_password | password_hash('sha512') }}"
   tags:
   - raspi_config:system:password
+
+# "S4 Hostname" "Set name for this computer on a network" \
+# "S5 Boot / Auto Login" "Select boot into desktop or to command line" \
+# "S6 Splash Screen" "Choose graphical splash screen or text boot" \
+# "S7 Power LED" "Set behaviour of power LED" \
+# "S8 Browser" "Choose default web browser" \
+
+
+
+#######
+# wireless LAN
+# TODO: get from networking 
+
+# audio 
+# TODO: figure out how audio works 
+
 
 ### Updating hostname
 
