@@ -1,0 +1,64 @@
+---
+
+# S1\ *) do_wifi_ssid_passphrase ;;
+# S2\ *) do_audio ;;
+# S3\ *) do_change_pass ;;
+- name: Change user's password
+  user:
+    name: "{{ raspi_config_user }}"
+    password: "{{ raspi_config_password | password_hash('sha512') }}"
+  tags:
+  - raspi_config:system:password
+
+# S4\ *) do_hostname ;;
+# S5\ *) do_boot_behaviour ;;
+# S6\ *) do_boot_splash ;;
+- name: Enable splash screen at boot
+  shell: raspi-config nonint do_boot_splash 0
+  when: raspi_config_enable_boot_splash_screen
+  tags: 
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:enable
+
+- name: Disable splash screen at boot
+  shell: raspi-config nonint do_boot_splash 1
+  when: not raspi_config_enable_boot_splash_screen
+  tags: 
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:disable
+
+# S7\ *) do_leds ;;
+# TODO: can't be changed for Pi0
+- name: See if it's possible to update LED behavior
+  shell: raspi-config nonint get_leds
+  changed_when: false
+  register: led_status
+  tags:
+  - raspi_config:system:power_led
+  - raspi_config:system:power_led:enable
+  - raspi_config:system:power_led:disable
+
+- name: Message about LED status
+  debug: 
+    msg: "It's not possible to update the LED behavior on this type of Raspberry Pi"
+  when: led_status.stdout | int == -1
+  tags:
+  - raspi_config:system:power_led
+  - raspi_config:system:power_led:enable
+  - raspi_config:system:power_led:disable
+
+- name: Power LED enable flash during activity 
+  shell: raspi-config nonint do_leds 0
+  when: raspi_config_power_led_flash_during_activity and led_status.stdout|int > -1
+  tags: 
+  - raspi_config:system:power_led
+  - raspi_config:system:power_led:enable
+  
+- name: Power LED disable flash during activity 
+  shell: raspi-config nonint do_leds 0
+  when: not raspi_config_power_led_flash_during_activity and led_status.stdout|int > -1
+  tags: 
+  - raspi_config:system:power_led
+  - raspi_config:system:power_led:disable
+
+# S8\ *) do_browser ;;

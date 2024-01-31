@@ -3,17 +3,17 @@
 - import_tasks: system.yml
   tags: ['raspi_config', 'raspi_config:system']
 
-- import_tasks: display.yml
-  tags: ['raspi_config', 'raspi_config:networking']
+# - import_tasks: display.yml
+#   tags: ['raspi_config', 'raspi_config:networking']
 
-- import_tasks: interface.yml
-  tags: ['raspi_config', 'raspi_config:interface']
+# - import_tasks: interface.yml
+#   tags: ['raspi_config', 'raspi_config:interface']
 
-- import_tasks: localization.yml
-  tags: ['raspi_config', 'raspi_config:localization']
+# - import_tasks: localization.yml
+#   tags: ['raspi_config', 'raspi_config:localization']
 
-- import_tasks: interface.yml
-  tags: ['raspi_config', 'raspi_config:interface']
+# - import_tasks: interface.yml
+#   tags: ['raspi_config', 'raspi_config:interface']
 
 - name: Disable raspi-config at boot
   file:
