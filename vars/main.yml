@@ -1,2 +1,6 @@
 ---
-# vars file for raspi-config
+
+RASPI_CONFIG_CLI_ARGS:
+  raspi_config_enable_boot_splash_screen:
+    true: 0
+    false: 1

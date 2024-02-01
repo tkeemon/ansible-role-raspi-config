@@ -13,6 +13,16 @@
 # S4\ *) do_hostname ;;
 # S5\ *) do_boot_behaviour ;;
 # S6\ *) do_boot_splash ;;
+- name: debug
+  debug:
+    msg: "{{ RASPI_CONFIG_CLI_ARGS }} \n {{ RASPI_CONFIG_CLI_ARGS['raspi_config_enable_boot_splash_screen'][raspi_config_enable_boot_splash_screen]}}"
+  when: raspi_config_enable_boot_splash_screen
+  tags: 
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:debug
+  - raspi_config:system:splash_screen:enable
+  - raspi_config:system:splash_screen:disabled
+
 - name: Enable splash screen at boot
   shell: raspi-config nonint do_boot_splash 0
   when: raspi_config_enable_boot_splash_screen
@@ -26,6 +36,14 @@
   tags: 
   - raspi_config:system:splash_screen
   - raspi_config:system:splash_screen:disable
+
+- name: Splash screen at boot
+  shell: raspi-config nonint do_boot_splash \
+    {{ RASPI_CONFIG_CLI_ARGS['raspi_config_enable_boot_splash_screen'][raspi_config_enable_boot_splash_screen]}}
+  # when: not raspi_config_enable_boot_splash_screen
+  tags: 
+  - raspi_config:system:splash_screen:one
+
 
 # S7\ *) do_leds ;;
 # TODO: can't be changed for Pi0
