@@ -29,7 +29,7 @@
 
 # S7\ *) do_leds ;;
 # TODO: can't be changed for Pi0
-- name: See if it's possible to update LED behavior
+- name: Get current default LED behavior
   shell: raspi-config nonint get_leds
   changed_when: false
   register: led_status
@@ -41,7 +41,7 @@
 - name: Message about LED status
   debug: 
     msg: "It's not possible to update the LED behavior on this type of Raspberry Pi"
-  when: led_status.stdout | int == -1
+  when: led_status.stdout|int == -1
   tags:
   - raspi_config:system:power_led
   - raspi_config:system:power_led:enable
@@ -50,12 +50,14 @@
 - name: Power LED enable flash during activity 
   shell: raspi-config nonint do_leds 0
   when: raspi_config_power_led_flash_during_activity and led_status.stdout|int > -1
+  changed_when: led_status.stdout|int == 1
   tags: 
   - raspi_config:system:power_led
   - raspi_config:system:power_led:enable
   
-- name: Power LED disable flash during activity 
-  shell: raspi-config nonint do_leds 0
+- name: Power LED always on (disable flash during activity)
+  shell: raspi-config nonint do_leds 1
+  changed_when: led_status.stdout|int == 0
   when: not raspi_config_power_led_flash_during_activity and led_status.stdout|int > -1
   tags: 
   - raspi_config:system:power_led
