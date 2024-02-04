@@ -11,6 +11,19 @@
   - raspi_config:system:password
 
 # "S4 Hostname" "Set name for this computer on a network" \
+- name: Get current hostname
+  shell: raspi-config nonint get_hostname
+  changed_when: false
+  register: current_hostname
+  tags:
+  - raspi_config:system:hostname
+
+- name: Update hostname
+  shell: raspi-config nonint do_hostname {{ raspi_config_hostname }}
+  when: current_hostname.stdout != raspi_config_hostname
+  notify: Reboot
+  tags:
+  - raspi_config:system:hostname
 
 # "S5 Boot / Auto Login" "Select boot into desktop or to command line" \
 # "S6 Network at Boot" "Select wait for network connection on boot" \
