@@ -1,8 +1,8 @@
 ---
 
-# S1\ *) do_wifi_ssid_passphrase ;;
-# S2\ *) do_audio ;;
-# S3\ *) do_change_pass ;;
+# "S1 Wireless LAN" "Enter SSID and passphrase" \
+# "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
+# "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password
   user:
     name: "{{ raspi_config_user }}"
@@ -10,24 +10,49 @@
   tags:
   - raspi_config:system:password
 
-# S4\ *) do_hostname ;;
-# S5\ *) do_boot_behaviour ;;
-# S6\ *) do_boot_splash ;;
+# "S4 Hostname" "Set name for this computer on a network" \
+
+# "S5 Boot / Auto Login" "Select boot into desktop or to command line" \
+# "S6 Network at Boot" "Select wait for network connection on boot" \
+# "S7 Splash Screen" "Choose graphical splash screen or text boot" \
+- name: Make sure splash screen is installed
+  stat:
+    path: /usr/share/plymouth/themes/pix/pix.script
+  register: is_splash_installed
+  tags:
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:enable
+  - raspi_config:system:splash_screen:disable
+
+- name: Get current splash screen status
+  shell: raspi-config nonint get_boot_splash
+  register: splash_config
+  changed_when: false
+  when: is_splash_installed.stat.exists
+  tags:
+  - raspi_config:system:splash_screen
+  - raspi_config:system:splash_screen:enable
+  - raspi_config:system:splash_screen:disable
+
 - name: Enable splash screen at boot
   shell: raspi-config nonint do_boot_splash 0
-  when: raspi_config_enable_boot_splash_screen
+  changed_when: splash_config.stdout|int == 1
+    raspi_config_enable_boot_splash_screen and
+    splash_config.stdout|int == 1
   tags: 
   - raspi_config:system:splash_screen
   - raspi_config:system:splash_screen:enable
 
 - name: Disable splash screen at boot
   shell: raspi-config nonint do_boot_splash 1
-  when: not raspi_config_enable_boot_splash_screen
+  when: is_splash_installed.stat.exists and
+    not raspi_config_enable_boot_splash_screen and
+    splash_config.stdout|int == 0
   tags: 
   - raspi_config:system:splash_screen
   - raspi_config:system:splash_screen:disable
 
-# S7\ *) do_leds ;;
+# "S8 Power LED" "Set behaviour of power LED" \
 # TODO: can't be changed for Pi0
 - name: Get current default LED behavior
   shell: raspi-config nonint get_leds
@@ -63,4 +88,3 @@
   - raspi_config:system:power_led
   - raspi_config:system:power_led:disable
 
-# S8\ *) do_browser ;;
