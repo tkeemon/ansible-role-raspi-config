@@ -1,2 +1,6 @@
 ---
-# vars file for raspi-config
+RASPI_CONFIG_BOOT_BEHAVIOR:
+   console: B1
+   console_autologin: B2
+   desktop: B3
+   desktop_autologin: B4

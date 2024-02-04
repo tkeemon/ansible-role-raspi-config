@@ -26,6 +26,23 @@
   - raspi_config:system:hostname
 
 # "S5 Boot / Auto Login" "Select boot into desktop or to command line" \
+- name: Install lightdm if booting to desktop
+  apt:
+    name: lightdm
+    state: present
+  when: raspi_config_boot_behavior == "desktop" or
+    raspi_config_boot_behavior == "desktop_autologin"
+  tags:
+  - raspi_config:system:boot_behavior
+
+# TODO figure out if there's a way to actually detect a change here
+#  so we don't need to reboot each time this step is run
+- name: Update boot behavior
+  shell: raspi-config nonint do_boot_behaviour {{ RASPI_CONFIG_BOOT_BEHAVIOR[raspi_config_boot_behavior] }}
+  tags:
+  - raspi_config:system:boot_behavior
+  notify: Reboot
+
 # "S6 Network at Boot" "Select wait for network connection on boot" \
 # "S7 Splash Screen" "Choose graphical splash screen or text boot" \
 - name: Make sure splash screen is installed

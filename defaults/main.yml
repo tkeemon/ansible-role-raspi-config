@@ -12,7 +12,7 @@ raspi_config_password: raspberry
 
 # hostname
 raspi_config_hostname: raspberrypi
-raspi_config_enable_predictable_net_names: false
+# raspi_config_enable_predictable_net_names: false
 
 
 # auto login
