@@ -31,7 +31,7 @@ raspi_config_power_led_flash_during_activity: false
 #    desktop
 #    desktop_autologin
 raspi_config_boot_behavior: console
-raspi_config_boot_autologin_user: pi
+# raspi_config_boot_autologin_user: pi
 
 raspi_config_wait_on_network: false
 
