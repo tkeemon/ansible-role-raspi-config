@@ -10,6 +10,11 @@
   - raspi_config:system:wifi
 
 # "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
+# TODO: test on an rPi with a headphone jack
+- name: Need to implement Audio option
+  debug:
+    msg: "TODO: implement"
+
 # "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password
   user:
@@ -150,4 +155,3 @@
   tags: 
   - raspi_config:system:power_led
   - raspi_config:system:power_led:disable
-
