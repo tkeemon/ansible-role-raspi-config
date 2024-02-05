@@ -1,6 +1,14 @@
 ---
 
 # "S1 Wireless LAN" "Enter SSID and passphrase" \
+# TODO: check wpa_supplicant.conf for the given ssid/password pair to ignore duplicates
+- name: Add WIFI SSID and password
+  shell: raspi-config nonint do_wifi_ssid_passphrase {{ raspi_config_wifi_ssid }} {{ raspi_config_wifi_password}}
+  when: raspi_config_wifi_ssid != "" and
+    raspi_config_wifi_password != ""
+  tags:
+  - raspi_config:system:wifi
+
 # "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
 # "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password

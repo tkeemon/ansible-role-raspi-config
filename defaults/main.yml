@@ -3,6 +3,8 @@
 ### system.yml
 
 # wireless LAN
+raspi_config_wifi_ssid: ""
+raspi_config_wifi_password: ""
 
 # audio
 
@@ -48,8 +50,6 @@ raspi_config_time_zone: Europe/London
 # 2 letter country codes can be found in the first column
 #    of: /usr/share/zoneinfo/iso3166.tab
 raspi_config_wifi_country: GB
-raspi_config_wifi_ssid: ""
-raspi_config_wifi_password: ""
 # raspi_config_wifi_interface: wlan0
 
 ### interface.yml
