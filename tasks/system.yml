@@ -44,6 +44,31 @@
   notify: Reboot
 
 # "S6 Network at Boot" "Select wait for network connection on boot" \
+- name: Get current network at boot status
+  shell: raspi-config nonint get_boot_wait
+  register: boot_wait
+  changed_when: false
+  tags:
+  - raspi_config:system:network_at_boot
+  - raspi_config:system:network_at_boot:enable
+  - raspi_config:system:network_at_boot:disable
+
+- name: Enable waiting for a network connection before booting system
+  shell: raspi-config nonint do_boot_wait 0
+  changed_when: boot_wait.stdout|int == 1
+  when: raspi_config_wait_on_network
+  tags:
+  - raspi_config:system:network_at_boot
+  - raspi_config:system:network_at_boot:enable
+
+- name: Disable waiting for a network connection before booting system
+  shell: raspi-config nonint do_boot_wait 1
+  changed_when: boot_wait.stdout|int == 0
+  when: not raspi_config_wait_on_network
+  tags:
+  - raspi_config:system:network_at_boot
+  - raspi_config:system:network_at_boot:disable
+
 # "S7 Splash Screen" "Choose graphical splash screen or text boot" \
 - name: Make sure splash screen is installed
   stat:
