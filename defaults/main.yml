@@ -44,6 +44,7 @@ raspi_config_wait_on_network: false
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
 # "D5 VNC Resolution" "Set resolution for headless use" \
 # "D6 Composite" "Set options for composite output" \
+raspi_config_enable_composite_video: false
 
 ### interface.yml
 
