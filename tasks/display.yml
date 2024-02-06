@@ -14,6 +14,33 @@
     msg: "TODO: implement"
 
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
+- name: Get current screen blanking state
+  shell: raspi-config nonint get_blanking
+  register: blanking_state
+  changed_when: false
+  tags:
+  - raspi_config:display:screen_blanking
+  - raspi_config:display:screen_blanking:enable
+  - raspi_config:display:screen_blanking:disable
+
+- name: Enable screen blanking
+  shell: raspi-config nonint do_blanking 0
+  changed_when: blanking_state.stdout|int == 1
+  when: raspi_config_enable_screen_blanking
+  notify: Reboot
+  tags:
+  - raspi_config:display:screen_blanking
+  - raspi_config:display:screen_blanking:enable
+
+- name: Disable screen blanking
+  shell: raspi-config nonint do_blanking 1
+  changed_when: blanking_state.stdout|int == 0
+  when: not raspi_config_enable_screen_blanking
+  notify: Reboot
+  tags:
+  - raspi_config:display:screen_blanking
+  - raspi_config:display:screen_blanking:disable
+
 # "D5 VNC Resolution" "Set resolution for headless use" \
 - name: Get current VNC resolution
   shell: raspi-config nonint get_vnc_resolution

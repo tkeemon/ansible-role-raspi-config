@@ -42,6 +42,8 @@ raspi_config_wait_on_network: false
 # "D2 Underscan" "Remove black border around screen" \
 # "D3 Pixel Doubling" "Enable/disable 2x2 pixel mapping" \
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
+raspi_config_enable_screen_blanking: true
+
 # "D5 VNC Resolution" "Set resolution for headless use" \
 # valid VNC resolutions:
   # 640x480
