@@ -43,6 +43,17 @@ raspi_config_wait_on_network: false
 # "D3 Pixel Doubling" "Enable/disable 2x2 pixel mapping" \
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
 # "D5 VNC Resolution" "Set resolution for headless use" \
+# valid VNC resolutions:
+  # 640x480
+  # 720x480
+  # 800x600
+  # 1024x768
+  # 1280x720
+  # 1280x1024
+  # 1600x1200
+  # 1920x1080
+raspi_config_vnc_resolution: 640x480
+
 # "D6 Composite" "Set options for composite output" \
 raspi_config_enable_composite_video: false
 

@@ -15,6 +15,20 @@
 
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
 # "D5 VNC Resolution" "Set resolution for headless use" \
+- name: Get current VNC resolution
+  shell: raspi-config nonint get_vnc_resolution
+  changed_when: false
+  register: vnc_resolution
+  tags:
+  - raspi_config:display:vnc_resolution
+
+- name: Update VNC resolution
+  shell: raspi-config nonint do_vnc_resolution {{ raspi_config_vnc_resolution }}
+  changed_when: vnc_resolution.stdout != raspi_config_vnc_resolution
+  notify: Reboot
+  tags:
+  - raspi_config:display:vnc_resolution
+
 # "D6 Composite" "Set options for composite output" \
 - name: Get current composite video output state
   shell: raspi-config nonint get_composite
