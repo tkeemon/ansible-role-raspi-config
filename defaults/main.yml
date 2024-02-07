@@ -63,12 +63,19 @@ raspi_config_enable_composite_video: false
 # "I1 Legacy Camera" "Enable/disable legacy camera support" \
 raspi_config_enable_legacy_camera: false
 # "I2 SSH" "Enable/disable remote command line access using SSH" \
+raspi_config_enable_ssh: true  # TODO change thist to 'false' later
 # "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
+raspi_config_enable_vnc: false
 # "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
+raspi_config_enable_spi: false
 # "I5 I2C" "Enable/disable automatic loading of I2C kernel module" \
+raspi_config_enable_i2c: false
 # "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
+raspi_config_enable_serial_port: false
 # "I7 1-Wire" "Enable/disable one-wire interface" \
+raspi_config_enable_one_wire: false
 # "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
+raspi_config_enable_remote_gpio: false
 
 ### localization.yml
 
@@ -81,12 +88,3 @@ raspi_config_time_zone: Europe/London
 raspi_config_wifi_country: GB
 # raspi_config_wifi_interface: wlan0
 
-### interface.yml
-
-raspi_config_enable_camera: false
-
-# default for ssh should be 'false', but I don't want to risk losing ssh access over a typo
-raspi_config_enable_ssh: true
-raspi_config_enable_vnc: false
-raspi_config_enable_spi: false
-raspi_config_enable_i2c: false
