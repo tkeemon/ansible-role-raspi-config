@@ -1,0 +1,37 @@
+---
+
+# "I1 Legacy Camera" "Enable/disable legacy camera support" \
+- name: Get current Legacy Camera status
+  shell: raspi-config nonint get_legacy
+  changed_when: false
+  register: legacy_camera
+  tags:
+  - raspi_config:interface:legacy_camera
+  - raspi_config:interface:legacy_camera:enable
+  - raspi_config:interface:legacy_camera:disable
+
+- name: Enable Legacy Camera support
+  shell: raspi-config nonint do_legacy 0
+  changed_when: legacy_camera.stdout|int == 1
+  when: raspi_config_enable_legacy_camera
+  notify: Reboot
+  tags:
+  - raspi_config:interface:legacy_camera
+  - raspi_config:interface:legacy_camera:enable
+
+- name: Disable Legacy Camera support
+  shell: raspi-config nonint do_legacy 1
+  changed_when: legacy_camera.stdout|int == 0
+  when: not raspi_config_enable_legacy_camera
+  notify: Reboot
+  tags:
+  - raspi_config:interface:legacy_camera
+  - raspi_config:interface:legacy_camera:disable
+
+# "I2 SSH" "Enable/disable remote command line access using SSH" \
+# "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
+# "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
+# "I5 I2C" "Enable/disable automatic loading of I2C kernel module" \
+# "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
+# "I7 1-Wire" "Enable/disable one-wire interface" \
+# "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \

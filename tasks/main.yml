@@ -6,8 +6,8 @@
 - import_tasks: display.yml
   tags: ['raspi_config', 'raspi_config:display']
 
-# - import_tasks: interface.yml
-#   tags: ['raspi_config', 'raspi_config:interface']
+- import_tasks: interface.yml
+  tags: ['raspi_config', 'raspi_config:interface']
 
 # - import_tasks: localization.yml
 #   tags: ['raspi_config', 'raspi_config:localization']

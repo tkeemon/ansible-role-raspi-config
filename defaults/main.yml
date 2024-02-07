@@ -60,6 +60,15 @@ raspi_config_vnc_resolution: 640x480
 raspi_config_enable_composite_video: false
 
 ### interface.yml
+# "I1 Legacy Camera" "Enable/disable legacy camera support" \
+raspi_config_enable_legacy_camera: false
+# "I2 SSH" "Enable/disable remote command line access using SSH" \
+# "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
+# "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
+# "I5 I2C" "Enable/disable automatic loading of I2C kernel module" \
+# "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
+# "I7 1-Wire" "Enable/disable one-wire interface" \
+# "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
 
 ### localization.yml
 
