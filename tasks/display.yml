@@ -7,6 +7,10 @@
     msg: "TODO: implement"
 
 # "D2 Underscan" "Remove black border around screen" \
+- name: Need to implement Underscan option
+  debug:
+    msg: "TODO: implement"
+  
 # "D3 Pixel Doubling" "Enable/disable 2x2 pixel mapping" \
 # TODO: test on an rPi > 0
 - name: Need to implement Pixel Doubling option
