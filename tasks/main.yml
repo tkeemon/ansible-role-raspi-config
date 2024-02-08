@@ -19,8 +19,8 @@
 - import_tasks: performance.yml
   tags: ['raspi_config', 'raspi_config:performance']
 
-# - import_tasks: localization.yml
-#   tags: ['raspi_config', 'raspi_config:localization']
+- import_tasks: localization.yml
+  tags: ['raspi_config', 'raspi_config:localization']
 
 # - import_tasks: interface.yml
 #   tags: ['raspi_config', 'raspi_config:interface']

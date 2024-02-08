@@ -1,0 +1,66 @@
+---
+# "L1 Locale" "Configure language and regional settings" \
+- name: Check current locale
+  shell: "echo $LANG"
+  register: current_lang
+  changed_when: false
+  tags:
+  - 'raspi_config:localization:locale'
+  
+- name: Update locale
+  shell: raspi-config nonint do_change_locale {{ raspi_config_locale }}
+  when: current_lang.stdout != raspi_config_locale
+  tags:
+  - 'raspi_config:localization:locale'
+
+# "L2 Timezone" "Configure time zone" \
+
+# "L3 Keyboard" "Set keyboard layout to match your keyboard" \
+# "L4 WLAN Country" "Set legal wireless channels for your country" \
+
+
+  
+
+
+### Changing timezone
+- name: Check current time zone
+  shell: "cat /etc/timezone"
+  register: current_time_zone
+  changed_when: false
+  tags: 
+  - raspi_config:localization:time_zone
+
+- name: Check if new time zone exists
+  stat:
+    path: "/usr/share/zoneinfo/{{ raspi_config_time_zone }}"
+  when: current_time_zone.stdout != raspi_config_time_zone
+  tags: 
+  - raspi_config:localization:time_zone
+
+- name: Update time zone
+  shell: raspi-config nonint do_change_timezone {{ raspi_config_time_zone }}
+  when: current_time_zone.stdout != raspi_config_time_zone
+  tags:
+  - raspi_config:localization:time_zone
+
+# - name: Changing keyboard layout
+- name: Change keyboard layout
+  fail:
+    msg: "Changing keyboard layout hasn't been implemented yet"
+  ignore_errors: true
+  tags:
+  - raspi_config:localization:keyboard
+  
+# - name: Changing wifi country
+- name: Get current wifi country
+  shell: raspi-config nonint get_wifi_country
+  register: current_wifi_country
+  changed_when: false
+  tags:
+  - raspi_config:localization:wifi_country
+
+- name: Update wifi country
+  shell: raspi-config nonint do_wifi_country {{ raspi_config_wifi_country }}
+  when: current_wifi_country.stdout != raspi_config_wifi_country
+  tags:
+  - raspi_config:localization:wifi_country

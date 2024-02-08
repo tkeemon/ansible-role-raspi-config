@@ -33,7 +33,6 @@ raspi_config_power_led_flash_during_activity: false
 #    desktop
 #    desktop_autologin
 raspi_config_boot_behavior: console
-# raspi_config_boot_autologin_user: pi
 
 raspi_config_wait_on_network: false
 
@@ -95,13 +94,17 @@ raspi_config_gpio_fan_pin: 14
 raspi_config_gpio_fan_temp: 80  # degrees Celsius between 60 and 120
 
 ### localization.yml
-
+# "L1 Locale" "Configure language and regional settings" \
+#   values available on the Raspberry Pi in: /usr/share/i18n/SUPPORTED
 raspi_config_locale: en_GB.UTF-8
+
+# "L2 Timezone" "Configure time zone" \
 raspi_config_time_zone: Europe/London
+
+# "L3 Keyboard" "Set keyboard layout to match your keyboard" \
 # raspi_config_keyboard_layout:
 
+# "L4 WLAN Country" "Set legal wireless channels for your country" \
 # 2 letter country codes can be found in the first column
 #    of: /usr/share/zoneinfo/iso3166.tab
 raspi_config_wifi_country: GB
-# raspi_config_wifi_interface: wlan0
-
