@@ -1,5 +1,12 @@
 ---
 
+- name: Get Raspberry Pi Model
+  shell: raspi-config nonint get_pi_type
+  register: rpi_model
+  changed_when: false
+  tags:
+  - always
+
 - import_tasks: system.yml
   tags: ['raspi_config', 'raspi_config:system']
 
@@ -8,6 +15,9 @@
 
 - import_tasks: interface.yml
   tags: ['raspi_config', 'raspi_config:interface']
+
+- import_tasks: performance.yml
+  tags: ['raspi_config', 'raspi_config:performance']
 
 # - import_tasks: localization.yml
 #   tags: ['raspi_config', 'raspi_config:localization']

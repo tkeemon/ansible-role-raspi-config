@@ -77,6 +77,23 @@ raspi_config_enable_one_wire: false
 # "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
 raspi_config_enable_remote_gpio: false
 
+### performance.yml
+# "P1 Overclock" "Configure CPU overclocking" \
+# only works for Pi1 and Pi2
+# valid values are: 
+#   Pi1: None|Modest|Medium|High|Turbo
+#   Pi2: None|High
+raspi_config_overclock_settings: None 
+# "P2 GPU Memory" "Change the amount of memory made available to the GPU" \
+# valid values: 16|32|64|128|256
+raspi_config_gpu_memory: 128 
+# "P3 Overlay File System" "Enable/disable read-only file system" \
+raspi_config_enable_overlayfs: false 
+# "P4 Fan" "Set behaviour of GPIO fan" \
+raspi_config_enable_gpio_fan: false
+raspi_config_gpio_fan_pin: 14
+raspi_config_gpio_fan_temp: 80  # degrees Celsius between 60 and 120
+
 ### localization.yml
 
 raspi_config_locale: en_GB.UTF-8

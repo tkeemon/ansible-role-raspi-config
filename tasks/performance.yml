@@ -1,0 +1,62 @@
+---
+# "P1 Overclock" "Configure CPU overclocking" \
+- name: Set overclock settings {{ raspi_config_overclock_settings }}
+  shell: raspi-config nonint do_overclock {{ raspi_config_overclock_settings }}
+  notify: Reboot
+  when: rpi_model.stdout|int == 1 or rpi_model.stdout|int == 2
+  tags: 
+  - raspi_config:performance:overclock
+
+# "P2 GPU Memory" "Change the amount of memory made available to the GPU" \
+# TODO: do some safety checking of the memory split before changing the config
+- name: Set GPU/CPU memory split 
+  shell: raspi-config nonint do_memory_split {{ raspi_config_gpu_memory }}
+  notify: Reboot  # TODO: see if 'changed' accurately indicates that we need to reboot
+  tags:
+  - raspi_config:performance:gpu_memory
+
+# "P3 Overlay File System" "Enable/disable read-only file system" \
+- name: Get current Overlay File System status
+  shell: raspi-config nonint get_overlay_conf
+  changed_when: false
+  register: overlayfs_status
+  tags:
+  - raspi_config:performance:overlayfs
+  - raspi_config:performance:overlayfs:enable
+  - raspi_config:performance:overlayfs:disable
+
+- name: Enable Overlay File System support
+  shell: raspi-config nonint do_overlayfs 0
+  changed_when: overlayfs_status.stdout|int == 1
+  notify: Reboot
+  when: raspi_config_enable_overlayfs
+  tags:
+  - raspi_config:performance:overlayfs
+  - raspi_config:performance:overlayfs:enable
+
+- name: Disable Overlay File System support
+  shell: raspi-config nonint do_overlayfs 1
+  changed_when: overlayfs_status.stdout|int == 0
+  notify: Reboot
+  when: not raspi_config_enable_overlayfs
+  tags:
+  - raspi_config:performance:overlayfs
+  - raspi_config:performance:overlayfs:disable
+
+# "P4 Fan" "Set behaviour of GPIO fan" \
+# TODO: figure out how to detect current fan state
+- name: Enable GPIO fan 
+  shell: raspi-config nonint do_fan 0 {{ raspi_config_gpio_fan_pin }} {{ raspi_config_gpio_fan_temp }}
+  notify: Reboot
+  when: raspi_config_enable_gpio_fan
+  tags: 
+  - raspi_config:performance:fan
+  - raspi_config:performance:fan:enable
+
+- name: Disable GPIO fan 
+  shell: raspi-config nonint do_fan 1
+  notify: Reboot
+  when: not raspi_config_enable_gpio_fan
+  tags: 
+  - raspi_config:performance:fan
+  - raspi_config:performance:fan:disable
