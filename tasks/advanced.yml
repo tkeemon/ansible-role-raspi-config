@@ -1,90 +1,149 @@
-vars: 
-- raspi_config_enable_xcompmgr: false  # TODO: find correct default 
-- raspi_config_use_latest_boot_rom_software: true  # TODO: find correct default 
-- raspi_config_enable_glamor: false
-- raspi_config_enable_wayland: false 
-# valid options: 'dhcpcd', 'NetworkManager'
-- raspi_config_network_config_tool: NetworkManager  # TODO: find correct default
-
-# expand filesystem 
+---
+# "A1 Expand Filesystem" "Ensures that all of the SD card is available" \
+# TODO: see if we can figure out whether or not this changes
 - name: Expand root filesystem 
-  shell: raspi-config do_expand_rootfs 
-  notify: reboot 
+  shell: raspi-config nonint do_expand_rootfs
+  notify: Reboot 
+  when: raspi_config_expand_filesystem
   tags: 
   - raspi_config:advanced:expand_filesystem
 
-# GL driver  # TODO: finish this 
-#   - might not be compatible with CLI options 
-#   - only available on certain Pis
-- name: Enable experimental desktop GL driver
-  shell: raspi-config do_gldriver 
-  notify: reboot  # TODO: see if this behaves correctly
+# "A2 GL Driver" "Enable/disable experimental desktop GL driver" \
+# "A3 Compositor" "Enable/disable xcompmgr composition manager" \
+- name: Get xcompmgr status
+  stat:
+    path: /etc/xdg/autostart/xcompmgr.desktop
+  register: xcompmgr_installed
+  tags:
+  - raspi_config:advanced:xcompmgr
+  - raspi_config:advanced:xcompmgr:enable
+  - raspi_config:advanced:xcompmgr:disable
 
-- name: Disable experimental desktop GL driver (use legacy driver)
-
-# compositor 
 - name: Enable xcompmgr composition manager 
-  shell: raspi-config do_xcompmgr 0
-  notify: reboot  # todo: make sure this works
+  shell: raspi-config nonint do_xcompmgr 0
+  notify: Reboot
+  changed_when: not xcompmgr_installed.stat.exists
   when: raspi_config_enable_xcompmgr
   tags: 
   - raspi_config:advanced:xcompmgr
   - raspi_config:advanced:xcompmgr:enable
 
 - name: Disable xcompmgr composition manager
-  shell: raspi-config do_xcompmgr 1
-  notify: reboot  # todo: make sure this works
+  shell: raspi-config nonint do_xcompmgr 1
+  notify: Reboot
+  changed_when: xcompmgr_installed.stat.exists
   when: not raspi_config_enable_xcompmgr
   tags: 
   - raspi_config:advanced:xcompmgr
   - raspi_config:advanced:xcompmgr:disable
 
-### Predictable network interface names
-# enable predictable names
+# "A4 Network Interface Names" "Enable/disable predictable network i/f names" \
+- name: Get current status of predictable network names
+  shell: raspi-config nonint get_net_names
+  register: net_names_status
+  changed_when: false
+  tags:
+  - raspi_config:advanced:net_names
+  - raspi_config:advanced:net_names:enable
+  - raspi_config:advanced:net_names:disable
 
-- name: Delete symlink to enable predictable network interface names
-  file:
-    path: /etc/systemd/network/99-default.link
-    state: absent
-    force: yes
+- name: Enable predictable network names
+  shell: raspi-config nonint do_net_names 0
+  changed_when: net_names_status.stdout|int == 1
   when: raspi_config_enable_predictable_net_names
-  notify: Reboot
-  tags: 
-  - raspi_config:advanced:predictable_net_names
-  - raspi_config:advanced:predictable_net_names:enable
+  tags:
+  - raspi_config:advanced:net_names
+  - raspi_config:advanced:net_names:enable
 
-- name: See if predictable names are disabled in cmdline.txt
-  shell: "grep -q \"net.ifnames=0\" /boot/cmdline.txt"
-  changed_when: no
-  register: cmdline_predictable_names
-  when: raspi_config_enable_predictable_net_names
-  tags: 
-  - raspi_config:advanced:predictable_net_names
-  - raspi_config:advanced:predictable_net_names:enable
-
-- name: Remove net.ifnames from /booot/cmdline.txt
-  shell: "sed -i /boot/cmdline.txt -e \"s/net.ifnames=0 *//\""
-  when: raspi_config_enable_predictable_net_names and raspi_config_enable_predictable_net_names.rc == 0
-  notify: Reboot
-  tags: 
-  - raspi_config:advanced:predictable_net_names
-  - raspi_config:advanced:predictable_net_names:enable
-
-# disable predictable names
-
-- name: Create symlink to disable predictable network interface names
-  file:
-    path: /etc/systemd/network/99-default.link
-    src: /dev/null
-    owner: root
-    group: root
-    state: link
-    force: yes
+- name: Disable predictable network names
+  shell: raspi-config nonint do_net_names 1
+  changed_when: net_names_status.stdout|int == 0
   when: not raspi_config_enable_predictable_net_names
-  notify: Reboot
+  tags:
+  - raspi_config:advanced:net_names
+  - raspi_config:advanced:net_names:disable
+
+# "A5 Network Proxy Settings" "Configure network proxy settings" \
+# "A6 Boot Order" "Choose network or USB device boot" \
+# "A7 Bootloader Version" "Select latest or default boot ROM software" \
+# "A8 Glamor" "Enable/disable glamor graphics acceleration" \
+# TODO: only available for some Pis
+- name: Get current glamor graphics acceleration status
+  stat:
+    path: /usr/share/X11/xorg.conf.d/20-noglamor.conf
+  register: glamor_graphics_status  # if file exists, glamor is disabled
   tags: 
-  - raspi_config:advanced:predictable_net_names
-  - raspi_config:advanced:predictable_net_names:disable
+  - raspi_config:advanced:glamor
+  - raspi_config:advanced:glamor:enable
+  - raspi_config:advanced:glamor:disable
+
+- name: Enable glamor graphics acceleration 
+  shell: raspi-config nonint do_glamor 0
+  changed_when: glamor_graphics_status.stat.exists
+  when: raspi_config_enable_glamor
+  tags: 
+  - raspi_config:advanced:glamor 
+  - raspi_config:advanced:glamor:enable 
+
+- name: Disable glamor graphics acceleration
+  shell: raspi-config nonint do_glamor 1
+  changed_when: not glamor_graphics_status.stat.exists
+  when: not raspi_config_enable_glamor
+  tags: 
+  - raspi_config:advanced:glamor 
+  - raspi_config:advanced:glamor:disable 
+
+# "A9 Wayland" "Enable experimental Wayland backend" \
+- name: Check experimental Wayland status
+  lineinfile:
+    regexp: ^user-session=LXDE-pi-wayland
+    # regexp: lock
+    path: /etc/lightdm/lightdm.conf
+    state: absent
+  check_mode: true  # don't make any change, just see if the line exists
+  changed_when: false
+  register: wayland_status
+  tags: 
+  - raspi_config:advanced:wayland
+  - raspi_config:advanced:wayland:enable
+  - raspi_config:advanced:wayland:disable
+
+- name: Enable experimental Wayland backend
+  shell: raspi-config nonint do_wayland 0
+  notify: Reboot 
+  changed_when: wayland_status.found == 0
+  when: raspi_config_enable_wayland
+  tags: 
+  - raspi_config:advanced:wayland
+  - raspi_config:advanced:wayland:enable
+
+- name: Disable experimental Wayland backend
+  shell: raspi-config nonint do_wayland 1
+  notify: Reboot 
+  changed_when: wayland_status.found > 0
+  when: not raspi_config_enable_wayland
+  tags: 
+  - raspi_config:advanced:wayland
+  - raspi_config:advanced:wayland:disable
+
+# "AA Network Config" "Set network configuration tool" \
+
+# vars: 
+# - raspi_config_enable_xcompmgr: false  # TODO: find correct default 
+# - raspi_config_use_latest_boot_rom_software: true  # TODO: find correct default 
+# - raspi_config_enable_glamor: false
+# - raspi_config_enable_wayland: false 
+# # valid options: 'dhcpcd', 'NetworkManager'
+# - raspi_config_network_config_tool: NetworkManager  # TODO: find correct default
+
+
+# GL driver  # TODO: finish this 
+#   - might not be compatible with CLI options 
+#   - only available on certain Pis
+# - name: Enable experimental desktop GL driver
+#   shell: raspi-config do_gldriver 
+#   notify: reboot  # TODO: see if this behaves correctly
+
 
 # network proxy settings 
 # TODO: figure out how to order these
@@ -104,43 +163,8 @@ vars:
   when: raspi_config_use_latest_boot_rom_software
   tags: 'test'
 
-- name: Use the factory default boot ROM software
-
-
-# glamor (graphics acceleration)
-# TODO: only available for some Pis
-- name: Enable glamor graphics acceleration 
-  shell: raspi-config nonint do_glamor 0
-  notify: reboot  # TODO: make sure this works 
-  when: raspi_config_enable_glamor
-  tags: 
-  - raspi_config:advanced:glamor 
-  - raspi_config:advanced:glamor:enable 
-
-- name: Disable glamor graphics acceleration 
-  shell: raspi-config nonint do_glamor 1
-  notify: reboot  # TODO: make sure this works 
-  when: not raspi_config_enable_glamor
-  tags: 
-  - raspi_config:advanced:glamor 
-  - raspi_config:advanced:glamor:disable 
-
 # wayland 
-- name: Enable experimental Wayland backend
-  shell: raspi-config do_wayland 0
-  notify: reboot  # TOOD: make sure this works 
-  when: raspi_config_enable_wayland
-  tags: 
-  - raspi_config:advanced:wayland
-  - raspi_config:advanced:wayland:enable
 
-- name: Disable experimental Wayland backend
-  shell: raspi-config do_wayland 1
-  notify: reboot  # TOOD: make sure this works 
-  when: not raspi_config_enable_wayland
-  tags: 
-  - raspi_config:advanced:wayland
-  - raspi_config:advanced:wayland:disable
 
 # network config 
 - name: Set NetworkManager as network configuration tool

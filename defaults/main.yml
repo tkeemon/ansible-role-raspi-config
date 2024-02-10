@@ -108,3 +108,20 @@ raspi_config_time_zone: Europe/London
 # 2 letter country codes can be found in the first column
 #    of: /usr/share/zoneinfo/iso3166.tab
 raspi_config_wifi_country: GB
+
+### advanced.yml
+# "A1 Expand Filesystem" "Ensures that all of the SD card is available" \
+raspi_config_expand_filesystem: false
+# "A2 GL Driver" "Enable/disable experimental desktop GL driver" \
+# "A3 Compositor" "Enable/disable xcompmgr composition manager" \
+raspi_config_enable_xcompmgr: false
+# "A4 Network Interface Names" "Enable/disable predictable network i/f names" \
+raspi_config_enable_predictable_net_names: false
+# "A5 Network Proxy Settings" "Configure network proxy settings" \
+# "A6 Boot Order" "Choose network or USB device boot" \
+# "A7 Bootloader Version" "Select latest or default boot ROM software" \
+# "A8 Glamor" "Enable/disable glamor graphics acceleration" \
+raspi_config_enable_glamor: false
+# "A9 Wayland" "Enable experimental Wayland backend" \
+raspi_config_enable_wayland: false
+# "AA Network Config" "Set network configuration tool" \
