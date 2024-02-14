@@ -147,38 +147,38 @@
 
 # network proxy settings 
 # TODO: figure out how to order these
-- name: Update HTTP proxy address
-  shell: raspi-config nonint do_proxy http {{ raspi_config_http_proxy_address }}
-  when: 
-  tags: 
-  - raspi_config:advanced:proxy
+# - name: Update HTTP proxy address
+#   shell: raspi-config nonint do_proxy http {{ raspi_config_http_proxy_address }}
+#   when: 
+#   tags: 
+#   - raspi_config:advanced:proxy
 
-# boot order 
-# TODO: handle three cases: sd card, usb stick, network 
+# # boot order 
+# # TODO: handle three cases: sd card, usb stick, network 
 
-# boot loader
-# TODO: figure out how to handle resetting defaults  
-- name: Use the latest version of the boot ROM software 
-  shell: raspi-config do_boot_rom E1
-  when: raspi_config_use_latest_boot_rom_software
-  tags: 'test'
+# # boot loader
+# # TODO: figure out how to handle resetting defaults  
+# - name: Use the latest version of the boot ROM software 
+#   shell: raspi-config do_boot_rom E1
+#   when: raspi_config_use_latest_boot_rom_software
+#   tags: 'test'
 
-# wayland 
+# # wayland 
 
 
-# network config 
-- name: Set NetworkManager as network configuration tool
-  shell: raspi-config nonint do_netconf 2
-  notify: reboot  # TODO: make sure this works 
-  when: raspi_config_network_config_tool == 'NetworkManager'
-  tags: 
-  - raspi_config:advanced:network_config
-  - raspi_config:advanced_network_config:network_manager
+# # network config 
+# - name: Set NetworkManager as network configuration tool
+#   shell: raspi-config nonint do_netconf 2
+#   notify: reboot  # TODO: make sure this works 
+#   when: raspi_config_network_config_tool == 'NetworkManager'
+#   tags: 
+#   - raspi_config:advanced:network_config
+#   - raspi_config:advanced_network_config:network_manager
 
-- name: Set dhcpcd as network configuration tool
-  shell: raspi-config nonint do_netconf 1
-  notify: reboot  # TODO: make sure this works 
-  when: raspi_config_network_config_tool == 'dhcpcd'
-  tags: 
-  - raspi_config:advanced:network_config
-  - raspi_config:advanced_network_config:dhcpcd
+# - name: Set dhcpcd as network configuration tool
+#   shell: raspi-config nonint do_netconf 1
+#   notify: reboot  # TODO: make sure this works 
+#   when: raspi_config_network_config_tool == 'dhcpcd'
+#   tags: 
+#   - raspi_config:advanced:network_config
+#   - raspi_config:advanced_network_config:dhcpcd

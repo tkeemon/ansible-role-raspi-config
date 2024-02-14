@@ -12,8 +12,9 @@
 # "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
 # TODO: test on an rPi with a headphone jack
 - name: Need to implement Audio option
-  debug:
-    msg: "TODO: implement"
+  fail:
+    msg: "TODO: implement audio options"
+  ignore_errors: true
 
 # "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password
@@ -52,9 +53,9 @@
 #  so we don't need to reboot each time this step is run
 - name: Update boot behavior
   shell: raspi-config nonint do_boot_behaviour {{ RASPI_CONFIG_BOOT_BEHAVIOR[raspi_config_boot_behavior] }}
+  notify: Reboot
   tags:
   - raspi_config:system:boot_behavior
-  notify: Reboot
 
 # "S6 Network at Boot" "Select wait for network connection on boot" \
 - name: Get current network at boot status
@@ -105,7 +106,7 @@
 - name: Enable splash screen at boot
   shell: raspi-config nonint do_boot_splash 0
   changed_when: splash_config.stdout|int == 1
-    raspi_config_enable_boot_splash_screen and
+  when: raspi_config_enable_boot_splash_screen and
     splash_config.stdout|int == 1
   tags: 
   - raspi_config:system:splash_screen

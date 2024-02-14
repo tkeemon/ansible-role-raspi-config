@@ -32,4 +32,5 @@
   with_items:
     - /etc/profile.d/raspi-config.sh
     - /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf
-  tags: all
+  tags: 
+  - always
