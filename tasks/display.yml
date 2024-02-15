@@ -22,7 +22,7 @@
 
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
 - name: Get current screen blanking state
-  shell: raspi-config nonint get_blanking
+  ansible.builtin.command: raspi-config nonint get_blanking
   register: blanking_state
   changed_when: false
   tags:
@@ -31,7 +31,7 @@
   - raspi_config:display:screen_blanking:disable
 
 - name: Enable screen blanking
-  shell: raspi-config nonint do_blanking 0
+  ansible.builtin.command: raspi-config nonint do_blanking 0
   changed_when: blanking_state.stdout|int == 1
   when: raspi_config_enable_screen_blanking
   notify: Reboot
@@ -40,7 +40,7 @@
   - raspi_config:display:screen_blanking:enable
 
 - name: Disable screen blanking
-  shell: raspi-config nonint do_blanking 1
+  ansible.builtin.command: raspi-config nonint do_blanking 1
   changed_when: blanking_state.stdout|int == 0
   when: not raspi_config_enable_screen_blanking
   notify: Reboot
@@ -50,14 +50,14 @@
 
 # "D5 VNC Resolution" "Set resolution for headless use" \
 - name: Get current VNC resolution
-  shell: raspi-config nonint get_vnc_resolution
+  ansible.builtin.command: raspi-config nonint get_vnc_resolution
   changed_when: false
   register: vnc_resolution
   tags:
   - raspi_config:display:vnc_resolution
 
 - name: Update VNC resolution
-  shell: raspi-config nonint do_vnc_resolution {{ raspi_config_vnc_resolution }}
+  ansible.builtin.command: raspi-config nonint do_vnc_resolution {{ raspi_config_vnc_resolution }}
   changed_when: vnc_resolution.stdout != raspi_config_vnc_resolution
   notify: Reboot
   tags:
@@ -65,7 +65,7 @@
 
 # "D6 Composite" "Set options for composite output" \
 - name: Get current composite video output state
-  shell: raspi-config nonint get_composite
+  ansible.builtin.command: raspi-config nonint get_composite
   register: composite_state
   changed_when: false
   tags:
@@ -74,7 +74,7 @@
   - raspi_config:display:composite:disable
 
 - name: Enable composite video output
-  shell: raspi-config nonint do_composite 0
+  ansible.builtin.command: raspi-config nonint do_composite 0
   changed_when: composite_state.stdout|int == 1
   when: raspi_config_enable_composite_video
   notify: Reboot
@@ -83,7 +83,7 @@
   - raspi_config:display:composite:enable
 
 - name: Disable composite video output
-  shell: raspi-config nonint do_composite 1
+  ansible.builtin.command: raspi-config nonint do_composite 1
   changed_when: composite_state.stdout|int == 0
   when: not raspi_config_enable_composite_video
   notify: Reboot

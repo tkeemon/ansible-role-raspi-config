@@ -1,7 +1,7 @@
 ---
 
 - name: Get Raspberry Pi Model
-  shell: raspi-config nonint get_pi_type
+  ansible.builtin.command: raspi-config nonint get_pi_type
   register: rpi_model
   changed_when: false
   tags:

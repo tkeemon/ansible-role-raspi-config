@@ -1,14 +1,14 @@
 ---
 # "L1 Locale" "Configure language and regional settings" \
 - name: Check current locale
-  shell: "echo $LANG"
+  ansible.builtin.command: "echo $LANG"
   register: current_lang
   changed_when: false
   tags:
   - 'raspi_config:localization:locale'
   
 - name: Update locale
-  shell: raspi-config nonint do_change_locale {{ raspi_config_locale }}
+  ansible.builtin.command: raspi-config nonint do_change_locale {{ raspi_config_locale }}
   when: current_lang.stdout != raspi_config_locale
   tags:
   - 'raspi_config:localization:locale'
@@ -24,7 +24,7 @@
 
 ### Changing timezone
 - name: Check current time zone
-  shell: "cat /etc/timezone"
+  ansible.builtin.command: "cat /etc/timezone"
   register: current_time_zone
   changed_when: false
   tags: 
@@ -38,7 +38,7 @@
   - raspi_config:localization:time_zone
 
 - name: Update time zone
-  shell: raspi-config nonint do_change_timezone {{ raspi_config_time_zone }}
+  ansible.builtin.command: raspi-config nonint do_change_timezone {{ raspi_config_time_zone }}
   when: current_time_zone.stdout != raspi_config_time_zone
   tags:
   - raspi_config:localization:time_zone
@@ -53,14 +53,14 @@
   
 # - name: Changing wifi country
 - name: Get current wifi country
-  shell: raspi-config nonint get_wifi_country
+  ansible.builtin.command: raspi-config nonint get_wifi_country
   register: current_wifi_country
   changed_when: false
   tags:
   - raspi_config:localization:wifi_country
 
 - name: Update wifi country
-  shell: raspi-config nonint do_wifi_country {{ raspi_config_wifi_country }}
+  ansible.builtin.command: raspi-config nonint do_wifi_country {{ raspi_config_wifi_country }}
   when: current_wifi_country.stdout != raspi_config_wifi_country
   tags:
   - raspi_config:localization:wifi_country

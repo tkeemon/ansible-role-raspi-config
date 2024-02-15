@@ -2,7 +2,7 @@
 
 # "I1 Legacy Camera" "Enable/disable legacy camera support" \
 - name: Get current Legacy Camera status
-  shell: raspi-config nonint get_legacy
+  ansible.builtin.command: raspi-config nonint get_legacy
   changed_when: false
   register: legacy_camera
   tags:
@@ -11,7 +11,7 @@
   - raspi_config:interface:legacy_camera:disable
 
 - name: Enable Legacy Camera support
-  shell: raspi-config nonint do_legacy 0
+  ansible.builtin.command: raspi-config nonint do_legacy 0
   changed_when: legacy_camera.stdout|int == 1
   when: raspi_config_enable_legacy_camera
   notify: Reboot
@@ -20,7 +20,7 @@
   - raspi_config:interface:legacy_camera:enable
 
 - name: Disable Legacy Camera support
-  shell: raspi-config nonint do_legacy 1
+  ansible.builtin.command: raspi-config nonint do_legacy 1
   changed_when: legacy_camera.stdout|int == 0
   when: not raspi_config_enable_legacy_camera
   notify: Reboot
@@ -30,7 +30,7 @@
 
 # "I2 SSH" "Enable/disable remote command line access using SSH" \
 - name: Get current SSH status
-  shell: raspi-config nonint get_ssh
+  ansible.builtin.command: raspi-config nonint get_ssh
   changed_when: false
   register: ssh_status
   tags:
@@ -39,7 +39,7 @@
   - raspi_config:interface:ssh:disable
 
 - name: Enable SSH support
-  shell: raspi-config nonint do_ssh 0
+  ansible.builtin.command: raspi-config nonint do_ssh 0
   changed_when: ssh_status.stdout|int == 1
   when: raspi_config_enable_ssh
   tags:
@@ -47,7 +47,7 @@
   - raspi_config:interface:ssh:enable
 
 - name: Disable SSH support
-  shell: raspi-config nonint do_ssh 1
+  ansible.builtin.command: raspi-config nonint do_ssh 1
   changed_when: ssh_status.stdout|int == 0
   when: not raspi_config_enable_ssh
   tags:
@@ -56,7 +56,7 @@
 
 # "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
 - name: Get current VNC status
-  shell: raspi-config nonint get_vnc
+  ansible.builtin.command: raspi-config nonint get_vnc
   changed_when: false
   register: vnc_status
   tags:
@@ -65,7 +65,7 @@
   - raspi_config:interface:vnc:disable
 
 - name: Enable VNC support
-  shell: raspi-config nonint do_vnc 0
+  ansible.builtin.command: raspi-config nonint do_vnc 0
   changed_when: vnc_status.stdout|int == 1
   when: raspi_config_enable_vnc
   tags:
@@ -73,7 +73,7 @@
   - raspi_config:interface:vnc:enable
 
 - name: Disable VNC support
-  shell: raspi-config nonint do_vnc 1
+  ansible.builtin.command: raspi-config nonint do_vnc 1
   changed_when: vnc_status.stdout|int == 0
   when: not raspi_config_enable_vnc
   tags:
@@ -82,7 +82,7 @@
 
 # "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
 - name: Get current SPI status
-  shell: raspi-config nonint get_spi
+  ansible.builtin.command: raspi-config nonint get_spi
   changed_when: false
   register: spi_status
   tags:
@@ -91,7 +91,7 @@
   - raspi_config:interface:spi:disable
 
 - name: Enable SPI support
-  shell: raspi-config nonint do_spi 0
+  ansible.builtin.command: raspi-config nonint do_spi 0
   changed_when: spi_status.stdout|int == 1
   when: raspi_config_enable_spi
   tags:
@@ -99,7 +99,7 @@
   - raspi_config:interface:spi:enable
 
 - name: Disable SPI support
-  shell: raspi-config nonint do_spi 1
+  ansible.builtin.command: raspi-config nonint do_spi 1
   changed_when: spi_status.stdout|int == 0
   when: not raspi_config_enable_spi
   tags:
@@ -108,7 +108,7 @@
 
 # "I5 I2C" "Enable/disable automatic loading of I2C kernel module" \
 - name: Get current I2C status
-  shell: raspi-config nonint get_i2c
+  ansible.builtin.command: raspi-config nonint get_i2c
   changed_when: false
   register: i2c_status
   tags:
@@ -117,7 +117,7 @@
   - raspi_config:interface:i2c:disable
 
 - name: Enable I2C support
-  shell: raspi-config nonint do_i2c 0
+  ansible.builtin.command: raspi-config nonint do_i2c 0
   changed_when: i2c_status.stdout|int == 1
   when: raspi_config_enable_i2c
   tags:
@@ -125,7 +125,7 @@
   - raspi_config:interface:i2c:enable
 
 - name: Disable I2C support
-  shell: raspi-config nonint do_i2c 1
+  ansible.builtin.command: raspi-config nonint do_i2c 1
   changed_when: i2c_status.stdout|int == 0
   when: not raspi_config_enable_i2c
   tags:
@@ -134,7 +134,7 @@
 
 # "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
 - name: Get current Serial Port status
-  shell: raspi-config nonint get_serial  # assume sw and hw serial are the same
+  ansible.builtin.command: raspi-config nonint get_serial  # assume sw and hw serial are the same
   changed_when: false
   register: serial_port_status
   tags:
@@ -143,7 +143,7 @@
   - raspi_config:interface:serial_port:disable
 
 - name: Enable Serial Port support
-  shell: raspi-config nonint do_serial 0
+  ansible.builtin.command: raspi-config nonint do_serial 0
   changed_when: serial_port_status.stdout|int == 1
   notify: Reboot
   when: raspi_config_enable_serial_port
@@ -152,7 +152,7 @@
   - raspi_config:interface:serial_port:enable
 
 - name: Disable Serial Port support
-  shell: raspi-config nonint do_serial 1
+  ansible.builtin.command: raspi-config nonint do_serial 1
   changed_when: serial_port_status.stdout|int == 0
   notify: Reboot
   when: not raspi_config_enable_serial_port
@@ -162,7 +162,7 @@
 
 # "I7 1-Wire" "Enable/disable one-wire interface" \
 - name: Get current 1-Wire status
-  shell: raspi-config nonint get_onewire
+  ansible.builtin.command: raspi-config nonint get_onewire
   changed_when: false
   register: one_wire_status
   tags:
@@ -171,7 +171,7 @@
   - raspi_config:interface:one_wire:disable
 
 - name: Enable 1-Wire support
-  shell: raspi-config nonint do_onewire 0
+  ansible.builtin.command: raspi-config nonint do_onewire 0
   changed_when: one_wire_status.stdout|int == 1
   notify: Reboot
   when: raspi_config_enable_one_wire
@@ -180,7 +180,7 @@
   - raspi_config:interface:one_wire:enable
 
 - name: Disable 1-Wire support
-  shell: raspi-config nonint do_onewire 1
+  ansible.builtin.command: raspi-config nonint do_onewire 1
   changed_when: one_wire_status.stdout|int == 0
   notify: Reboot
   when: not raspi_config_enable_one_wire
@@ -190,7 +190,7 @@
 
 # "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
 - name: Get current Remote GPIO status
-  shell: raspi-config nonint get_rgpio
+  ansible.builtin.command: raspi-config nonint get_rgpio
   changed_when: false
   register: remote_gpio_status
   tags:
@@ -199,7 +199,7 @@
   - raspi_config:interface:remote_gpio:disable
 
 - name: Enable Remote GPIO support
-  shell: raspi-config nonint do_rgpio 0
+  ansible.builtin.command: raspi-config nonint do_rgpio 0
   changed_when: remote_gpio_status.stdout|int == 1
   when: raspi_config_enable_remote_gpio
   tags:
@@ -207,7 +207,7 @@
   - raspi_config:interface:remote_gpio:enable
 
 - name: Disable Remote GPIO support
-  shell: raspi-config nonint do_rgpio 1
+  ansible.builtin.command: raspi-config nonint do_rgpio 1
   changed_when: remote_gpio_status.stdout|int == 0
   when: not raspi_config_enable_remote_gpio
   tags:

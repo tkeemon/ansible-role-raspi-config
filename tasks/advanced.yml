@@ -2,7 +2,7 @@
 # "A1 Expand Filesystem" "Ensures that all of the SD card is available" \
 # TODO: see if we can figure out whether or not this changes
 - name: Expand root filesystem 
-  shell: raspi-config nonint do_expand_rootfs
+  ansible.builtin.command: raspi-config nonint do_expand_rootfs
   notify: Reboot 
   when: raspi_config_expand_filesystem
   tags: 
@@ -20,7 +20,7 @@
   - raspi_config:advanced:xcompmgr:disable
 
 - name: Enable xcompmgr composition manager 
-  shell: raspi-config nonint do_xcompmgr 0
+  ansible.builtin.command: raspi-config nonint do_xcompmgr 0
   notify: Reboot
   changed_when: not xcompmgr_installed.stat.exists
   when: raspi_config_enable_xcompmgr
@@ -29,7 +29,7 @@
   - raspi_config:advanced:xcompmgr:enable
 
 - name: Disable xcompmgr composition manager
-  shell: raspi-config nonint do_xcompmgr 1
+  ansible.builtin.command: raspi-config nonint do_xcompmgr 1
   notify: Reboot
   changed_when: xcompmgr_installed.stat.exists
   when: not raspi_config_enable_xcompmgr
@@ -39,7 +39,7 @@
 
 # "A4 Network Interface Names" "Enable/disable predictable network i/f names" \
 - name: Get current status of predictable network names
-  shell: raspi-config nonint get_net_names
+  ansible.builtin.command: raspi-config nonint get_net_names
   register: net_names_status
   changed_when: false
   tags:
@@ -48,7 +48,7 @@
   - raspi_config:advanced:net_names:disable
 
 - name: Enable predictable network names
-  shell: raspi-config nonint do_net_names 0
+  ansible.builtin.command: raspi-config nonint do_net_names 0
   changed_when: net_names_status.stdout|int == 1
   when: raspi_config_enable_predictable_net_names
   tags:
@@ -56,7 +56,7 @@
   - raspi_config:advanced:net_names:enable
 
 - name: Disable predictable network names
-  shell: raspi-config nonint do_net_names 1
+  ansible.builtin.command: raspi-config nonint do_net_names 1
   changed_when: net_names_status.stdout|int == 0
   when: not raspi_config_enable_predictable_net_names
   tags:
@@ -78,7 +78,7 @@
   - raspi_config:advanced:glamor:disable
 
 - name: Enable glamor graphics acceleration 
-  shell: raspi-config nonint do_glamor 0
+  ansible.builtin.command: raspi-config nonint do_glamor 0
   changed_when: glamor_graphics_status.stat.exists
   when: raspi_config_enable_glamor
   tags: 
@@ -86,7 +86,7 @@
   - raspi_config:advanced:glamor:enable 
 
 - name: Disable glamor graphics acceleration
-  shell: raspi-config nonint do_glamor 1
+  ansible.builtin.command: raspi-config nonint do_glamor 1
   changed_when: not glamor_graphics_status.stat.exists
   when: not raspi_config_enable_glamor
   tags: 
@@ -109,7 +109,7 @@
   - raspi_config:advanced:wayland:disable
 
 - name: Enable experimental Wayland backend
-  shell: raspi-config nonint do_wayland 0
+  ansible.builtin.command: raspi-config nonint do_wayland 0
   notify: Reboot 
   changed_when: wayland_status.found == 0
   when: raspi_config_enable_wayland
@@ -118,7 +118,7 @@
   - raspi_config:advanced:wayland:enable
 
 - name: Disable experimental Wayland backend
-  shell: raspi-config nonint do_wayland 1
+  ansible.builtin.command: raspi-config nonint do_wayland 1
   notify: Reboot 
   changed_when: wayland_status.found > 0
   when: not raspi_config_enable_wayland
