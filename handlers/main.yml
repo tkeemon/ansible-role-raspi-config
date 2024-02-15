@@ -1,9 +1,11 @@
 ---
 
 - name: Reboot
-  reboot:
+  # reboot:  #comment out for now for faster testing
+  ansible.builtin.debug:
+    msg: "Reboot would have happened now"
 
 - name: Restart wpa_supplicant
-  service:
+  ansible.builtin.service:
     name: wpa_supplicant
     state: restarted

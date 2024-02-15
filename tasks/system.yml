@@ -3,7 +3,7 @@
 # "S1 Wireless LAN" "Enter SSID and passphrase" \
 # TODO: check wpa_supplicant.conf for the given ssid/password pair to ignore duplicates
 - name: Add WIFI SSID and password
-  ansible.builtin.command: raspi-config nonint do_wifi_ssid_passphrase {{ raspi_config_wifi_ssid }} {{ raspi_config_wifi_password}}
+  ansible.builtin.command: raspi-config nonint do_wifi_ssid_passphrase {{ raspi_config_wifi_ssid }} {{ raspi_config_wifi_password }}
   when: raspi_config_wifi_ssid != "" and
     raspi_config_wifi_password != ""
   tags:
@@ -12,13 +12,13 @@
 # "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
 # TODO: test on an rPi with a headphone jack
 - name: Need to implement Audio option
-  fail:
+  ansible.builtin.fail:
     msg: "TODO: implement audio options"
   ignore_errors: true
 
 # "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password
-  user:
+  ansible.builtin.user:
     name: "{{ raspi_config_user }}"
     password: "{{ raspi_config_password | password_hash('sha512') }}"
   tags:
@@ -34,14 +34,14 @@
 
 - name: Update hostname
   ansible.builtin.command: raspi-config nonint do_hostname {{ raspi_config_hostname }}
-  when: current_hostname.stdout != raspi_config_hostname
+  changed_when: current_hostname.stdout != raspi_config_hostname
   notify: Reboot
   tags:
   - raspi_config:system:hostname
 
 # "S5 Boot / Auto Login" "Select boot into desktop or to command line" \
 - name: Install lightdm if booting to desktop
-  apt:
+  ansible.builtin.apt:
     name: lightdm
     state: present
   when: raspi_config_boot_behavior == "desktop" or
@@ -52,7 +52,7 @@
 # TODO figure out if there's a way to actually detect a change here
 #  so we don't need to reboot each time this step is run
 - name: Update boot behavior
-  ansible.builtin.command: raspi-config nonint do_boot_behaviour {{ RASPI_CONFIG_BOOT_BEHAVIOR[raspi_config_boot_behavior] }}
+  ansible.builtin.command: raspi-config nonint do_boot_behaviour {{ raspi_config_boot_behavior_dict[raspi_config_boot_behavior] }}
   notify: Reboot
   tags:
   - raspi_config:system:boot_behavior
@@ -85,7 +85,7 @@
 
 # "S7 Splash Screen" "Choose graphical splash screen or text boot" \
 - name: Make sure splash screen is installed
-  stat:
+  ansible.builtin.stat:
     path: /usr/share/plymouth/themes/pix/pix.script
   register: is_splash_installed
   tags:
@@ -114,6 +114,7 @@
 
 - name: Disable splash screen at boot
   ansible.builtin.command: raspi-config nonint do_boot_splash 1
+  changed_when: splash_config.stdout|int == 0
   when: is_splash_installed.stat.exists and
     not raspi_config_enable_boot_splash_screen and
     splash_config.stdout|int == 0
@@ -133,7 +134,7 @@
   - raspi_config:system:power_led:disable
 
 - name: Message about LED status
-  debug: 
+  ansible.builtin.debug: 
     msg: "It's not possible to update the LED behavior on this type of Raspberry Pi"
   when: led_status.stdout|int == -1
   tags:

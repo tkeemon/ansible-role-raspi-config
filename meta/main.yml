@@ -4,7 +4,7 @@ galaxy_info:
   author: tkeemon
   description: An Ansible role to automate the changes made by `raspi-config`.
   license: MIT
-  min_ansible_version: 2.1
+  min_ansible_version: "2.1"
 
   #
   # Provide a list of supported platforms, and for each platform a list of versions.

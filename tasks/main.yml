@@ -7,26 +7,32 @@
   tags:
   - always
 
-- import_tasks: system.yml
+- name: Run System tasks
+  ansible.builtin.import_tasks: system.yml
   tags: ['raspi_config', 'raspi_config:system']
 
-- import_tasks: display.yml
+- name: Run Display tasks
+  ansible.builtin.import_tasks: display.yml
   tags: ['raspi_config', 'raspi_config:display']
 
-- import_tasks: interface.yml
+- name: Run Interface tasks
+  ansible.builtin.import_tasks: interface.yml
   tags: ['raspi_config', 'raspi_config:interface']
 
-- import_tasks: performance.yml
+- name: Run Performance tasks
+  ansible.builtin.import_tasks: performance.yml
   tags: ['raspi_config', 'raspi_config:performance']
 
-- import_tasks: localization.yml
+- name: Run Localization tasks
+  ansible.builtin.import_tasks: localization.yml
   tags: ['raspi_config', 'raspi_config:localization']
 
-- import_tasks: advanced.yml
+- name: Run Advanced tasks
+  ansible.builtin.import_tasks: advanced.yml
   tags: ['raspi_config', 'raspi_config:advanced']
 
 - name: Disable raspi-config at boot
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

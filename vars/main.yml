@@ -1,5 +1,5 @@
 ---
-RASPI_CONFIG_BOOT_BEHAVIOR:
+raspi_config_boot_behavior_dict:
    console: B1
    console_autologin: B2
    desktop: B3

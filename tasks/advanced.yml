@@ -11,7 +11,7 @@
 # "A2 GL Driver" "Enable/disable experimental desktop GL driver" \
 # "A3 Compositor" "Enable/disable xcompmgr composition manager" \
 - name: Get xcompmgr status
-  stat:
+  ansible.builtin.stat:
     path: /etc/xdg/autostart/xcompmgr.desktop
   register: xcompmgr_installed
   tags:
@@ -69,7 +69,7 @@
 # "A8 Glamor" "Enable/disable glamor graphics acceleration" \
 # TODO: only available for some Pis
 - name: Get current glamor graphics acceleration status
-  stat:
+  ansible.builtin.stat:
     path: /usr/share/X11/xorg.conf.d/20-noglamor.conf
   register: glamor_graphics_status  # if file exists, glamor is disabled
   tags: 
@@ -95,7 +95,7 @@
 
 # "A9 Wayland" "Enable experimental Wayland backend" \
 - name: Check experimental Wayland status
-  lineinfile:
+  ansible.builtin.lineinfile:
     regexp: ^user-session=LXDE-pi-wayland
     # regexp: lock
     path: /etc/lightdm/lightdm.conf
