@@ -2,10 +2,19 @@
 
 # "S1 Wireless LAN" "Enter SSID and passphrase" \
 # TODO: check wpa_supplicant.conf for the given ssid/password pair to ignore duplicates
+- name: See if SSID already exists in wpa_supplicant
+  shell: wpa_cli -i wlan0 list_networks | grep -q {{ raspi_config_wifi_ssid }}
+  changed_when: false
+  failed_when: false
+  register: ssid_found
+  tags:
+  - raspi_config:system:wifi
+
+# TODO: see if SSID is found and existing password matches supplied password
+
 - name: Add WIFI SSID and password
   ansible.builtin.command: raspi-config nonint do_wifi_ssid_passphrase {{ raspi_config_wifi_ssid }} {{ raspi_config_wifi_password }}
-  when: raspi_config_wifi_ssid != "" and
-    raspi_config_wifi_password != ""
+  when: raspi_config_wifi_ssid != ""
   tags:
   - raspi_config:system:wifi
 
