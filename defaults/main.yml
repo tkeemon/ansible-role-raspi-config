@@ -62,7 +62,7 @@ raspi_config_enable_composite_video: false
 # "I1 Legacy Camera" "Enable/disable legacy camera support" \
 raspi_config_enable_legacy_camera: false
 # "I2 SSH" "Enable/disable remote command line access using SSH" \
-raspi_config_enable_ssh: true  # TODO change thist to 'false' later
+raspi_config_enable_ssh: false
 # "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
 raspi_config_enable_vnc: false
 # "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
