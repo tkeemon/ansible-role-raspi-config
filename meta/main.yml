@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: raspi_config
   author: tkeemon
-  description: An Ansible role to automate the changes made by `raspi-config`.
+  description: An Ansible role to automate the changes made by `raspi-config` for the Raspbery Pi Operating System.
   license: MIT
   min_ansible_version: "2.1"
 
@@ -15,9 +15,7 @@ galaxy_info:
   platforms:
    - name: Debian
      versions:
-     - buster
-     - stretch
-     - jessie
+     - bullseye
 
   galaxy_tags:
   - raspberrypi

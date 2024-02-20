@@ -1,57 +1,70 @@
-# Ansible role: raspi_config
+WIP Ansible Role: raspi-config
+=========
 
-[![CI](https://github.com/tkeemon/ansible-role-raspi-config/workflows/CI/badge.svg?branch=master)](https://github.com/tkeemon/ansible-role-raspi-config/actions?query=workflow%3ACI)
+*This role is still a work in progress. Use at your own risk*
 
-An Ansible role that duplicates functionality of the raspi-config utility.
+An Ansible role that duplicates functionality of the raspi-config utility for the Raspberry Pi Operating System.
 
-## TODO
+Requirements
+------------
 
-Tasks to implement:
+None
 
-- [x] Change password for `pi` user
-- [ ] Network options
-  - [x] Update hostname
-  - [x] Configure wifi
-  - [x] Predictable network interface names
-  - [ ] Network proxy settings
-- [ ] Boot options
-  - [x] Boot to desktop or cli
-  - [x] Wait for network connection before boot
-  - [ ] Splash screen or text boot
-- [ ] Localization
-  - [x] Change locale
-  - [x] Change time zone
-  - [ ] Change keyboard layout
-  - [ ] Change Wifi country
-- [ ] Interfacing
-  - [x] Camera
-  - [x] SSH
-  - [x] VNC
-  - [ ] SPI
-  - [ ] I2C
-  - [ ] Serial
-  - [ ] 1-wire
-  - [ ] Remote GPIO
-- [ ] Overclock
-- [ ] Advanced
-  - [ ] Expand filesystem
-  - [ ] Overscan
-  - [ ] Memory split
-  - [ ] Audio
-  - [ ] Resolution
-  - [ ] Screen blanking
-  - [ ] Pixel doubling
-  - [ ] GL driver
-  - [ ] Compositor
-  - [ ] Pi4 video output
-  - [ ] Overlay FS
+Role Variables
+--------------
 
-## Notes for docs later
+Every variable in defaults/main.yml should mirror the default state of a freshly installed Raspberry Pi OS. Editing the variables and running the role will update the OS state accordingly.
 
-### Structure
+The tasks are organized to reflect the order of the options in the raspi-config UI. Each submenu cooresponds to a different file in the tasks directory. e.g. tasks/system.yml contains all of the tasks in system submenu of raspi-config.
 
-The tasks in this Ansible role are laid out to mirror those of the raspi-config menu.
+Tags are used extensive throughout this role in order to make individual changes without running the full role. Tags generally follow the format:
 
-### Tags
+```yaml
+raspi_config:SUBMENU_NAME:TASK_NAME
+```
 
-This playbook uses tags extensively.
+e.g.:
+
+```yaml
+raspi_config:interface:ssh
+```
+
+If a set of tasks enable or disable a particular state, those states are taged with:
+
+```yaml
+raspi_config:SUBMENU_NAME:TASK_NAME:enable
+# or
+raspi_config:SUBMENU_NAME:TASK_NAME:disable
+```
+
+e.g.
+
+```yaml
+raspi_config:interface:ssh:enable
+# or
+raspi_config:interface:ssh:disable
+```
+
+Dependencies
+------------
+
+None
+
+Example Playbook
+----------------
+
+```yaml
+- name: "Configure Rasperry Pi via raspi_config"
+  hosts: all
+  become: True
+  gather_facts: False
+  vars:
+    raspi_config_enable_ssh: True
+  roles:
+    - tkeemon.raspi_config
+```
+
+License
+-------
+
+MIT
