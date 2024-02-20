@@ -3,7 +3,7 @@
 # "S1 Wireless LAN" "Enter SSID and passphrase" \
 # TODO: check wpa_supplicant.conf for the given ssid/password pair to ignore duplicates
 - name: See if SSID already exists in wpa_supplicant
-  shell: wpa_cli -i wlan0 list_networks | grep -q {{ raspi_config_wifi_ssid }}
+  ansible.builtin.shell: set -o pipefail && wpa_cli -i wlan0 list_networks | grep -q {{ raspi_config_wifi_ssid }}
   changed_when: false
   failed_when: false
   register: ssid_found

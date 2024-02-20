@@ -13,12 +13,43 @@
     msg: "TODO: implement underscan option"
   ignore_errors: true
 
+# - name: Get current underscane state
+#   ansible.builtin.command: raspi-config nonint get_overscan
+#   register: overscan_state
+#   changed_when: false
+#   tags:
+#   - raspi_config:display:underscan
+#   - raspi_config:display:underscan:enable
+#   - raspi_config:display:underscan:disable
+
 # "D3 Pixel Doubling" "Enable/disable 2x2 pixel mapping" \
 # TODO: test on an rPi > 0
-- name: Need to implement Pixel Doubling option
-  ansible.builtin.fail:
-    msg: "TODO: implement pixel doubling"
-  ignore_errors: true
+- name: Get current pixel doubling state
+  ansible.builtin.command: raspi-config nonint get_pixdub
+  register: pixel_doubling_state
+  changed_when: false
+  tags:
+  - raspi_config:display:pixel_doubling
+  - raspi_config:display:pixel_doubling:enable
+  - raspi_config:display:pixel_doubling:disable
+
+- name: Enable pixel doubling
+  ansible.builtin.command: raspi-config nonint do_pixdub 0
+  changed_when: pixel_doubling_state.stdout|int == 1
+  when: pixel_doubling_state.stdout|int == 1
+  notify: Reboot
+  tags:
+  - raspi_config:display:pixel_doubling
+  - raspi_config:display:pixel_doubling:enable
+
+- name: Disable pixel doubling
+  ansible.builtin.command: raspi-config nonint do_pixdub 1
+  changed_when: pixel_doubling_state.stdout|int == 0
+  when: pixel_doubling_state.stdout|int == 0
+  notify: Reboot
+  tags:
+  - raspi_config:display:pixel_doubling
+  - raspi_config:display:pixel_doubling:disable
 
 # "D4 Screen Blanking" "Enable/disable screen blanking" \
 - name: Get current screen blanking state
