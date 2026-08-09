@@ -115,11 +115,10 @@
   - raspi_config:advanced:wayland:disable
 
 - name: Enable experimental Wayland backend
-  when: lightdm_conf.stat.exists
+  when: lightdm_conf.stat.exists and raspi_config_enable_wayland
   ansible.builtin.command: raspi-config nonint do_wayland W2
   notify: Reboot 
   changed_when: wayland_status.found is not defined
-  when: raspi_config_enable_wayland
   tags: 
   - raspi_config:advanced:wayland
   - raspi_config:advanced:wayland:enable
