@@ -10,8 +10,9 @@
 # "P2 GPU Memory" "Change the amount of memory made available to the GPU" \
 # TODO: do some safety checking of the memory split before changing the config
 - name: Set GPU/CPU memory split 
-  ansible.builtin.command: raspi-config nonint do_memory_split {{ raspi_config_gpu_memory }}
-  notify: Reboot  # TODO: see if 'changed' accurately indicates that we need to reboot
+  ansible.builtin.fail:
+    msg: "Changing GPU/CPU memory hasn't been re-implemented yet"
+  ignore_errors: true
   tags:
   - raspi_config:performance:gpu_memory
 

@@ -134,7 +134,7 @@
 
 # "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
 - name: Get current Serial Port status
-  ansible.builtin.command: raspi-config nonint get_serial  # assume sw and hw serial are the same
+  ansible.builtin.command: raspi-config nonint get_serial_cons  # assume sw and hw serial are the same
   changed_when: false
   register: serial_port_status
   tags:
@@ -143,7 +143,7 @@
   - raspi_config:interface:serial_port:disable
 
 - name: Enable Serial Port support
-  ansible.builtin.command: raspi-config nonint do_serial 0
+  ansible.builtin.command: raspi-config nonint do_serial_cons 0
   changed_when: serial_port_status.stdout|int == 1
   notify: Reboot
   when: raspi_config_enable_serial_port
@@ -152,7 +152,7 @@
   - raspi_config:interface:serial_port:enable
 
 - name: Disable Serial Port support
-  ansible.builtin.command: raspi-config nonint do_serial 1
+  ansible.builtin.command: raspi-config nonint do_serial_cons 1
   changed_when: serial_port_status.stdout|int == 0
   notify: Reboot
   when: not raspi_config_enable_serial_port
@@ -190,26 +190,10 @@
 
 # "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
 - name: Get current Remote GPIO status
-  ansible.builtin.command: raspi-config nonint get_rgpio
-  changed_when: false
-  register: remote_gpio_status
+  ansible.builtin.fail:
+    msg: "Changing Remote GPIO settings hasn't been re-implemented yet"
+  ignore_errors: true
   tags:
   - raspi_config:interface:remote_gpio
   - raspi_config:interface:remote_gpio:enable
-  - raspi_config:interface:remote_gpio:disable
-
-- name: Enable Remote GPIO support
-  ansible.builtin.command: raspi-config nonint do_rgpio 0
-  changed_when: remote_gpio_status.stdout|int == 1
-  when: raspi_config_enable_remote_gpio
-  tags:
-  - raspi_config:interface:remote_gpio
-  - raspi_config:interface:remote_gpio:enable
-
-- name: Disable Remote GPIO support
-  ansible.builtin.command: raspi-config nonint do_rgpio 1
-  changed_when: remote_gpio_status.stdout|int == 0
-  when: not raspi_config_enable_remote_gpio
-  tags:
-  - raspi_config:interface:remote_gpio
   - raspi_config:interface:remote_gpio:disable

@@ -94,7 +94,13 @@
   - raspi_config:advanced:glamor:disable 
 
 # "A9 Wayland" "Enable experimental Wayland backend" \
+- name: Check to see if lightdm is installed
+  ansible.builtin.stat:
+    path: /etc/lightdm/lightdm.conf
+  register: lightdm_conf
+
 - name: Check experimental Wayland status
+  when: lightdm_conf.stat.exists
   ansible.builtin.lineinfile:
     regexp: ^user-session=LXDE-pi-wayland
     # regexp: lock
@@ -109,19 +115,19 @@
   - raspi_config:advanced:wayland:disable
 
 - name: Enable experimental Wayland backend
-  ansible.builtin.command: raspi-config nonint do_wayland 0
+  when: lightdm_conf.stat.exists and raspi_config_enable_wayland
+  ansible.builtin.command: raspi-config nonint do_wayland W2
   notify: Reboot 
-  changed_when: wayland_status.found == 0
-  when: raspi_config_enable_wayland
+  changed_when: wayland_status.found is not defined
   tags: 
   - raspi_config:advanced:wayland
   - raspi_config:advanced:wayland:enable
 
 - name: Disable experimental Wayland backend
-  ansible.builtin.command: raspi-config nonint do_wayland 1
+  ansible.builtin.command: raspi-config nonint do_wayland W1
   notify: Reboot 
-  changed_when: wayland_status.found > 0
-  when: not raspi_config_enable_wayland
+  changed_when: wayland_status.found is defined
+  when: lightdm_conf.stat.exists and not raspi_config_enable_wayland
   tags: 
   - raspi_config:advanced:wayland
   - raspi_config:advanced:wayland:disable

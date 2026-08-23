@@ -56,6 +56,9 @@
   ansible.builtin.command: raspi-config nonint get_wifi_country
   register: current_wifi_country
   changed_when: false
+  failed_when: false
+  # raspi-config will return with a status code of 1 when the country code
+  # is not set (which is the default state upon a fresh install)
   tags:
   - raspi_config:localization:wifi_country
 

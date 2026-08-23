@@ -7,6 +7,12 @@
   tags:
   - always
 
+# Localization needs to run before System tasks in order to ensure the wifi
+# country is set before attempting to change the wifi settings.
+- name: Run Localization tasks
+  ansible.builtin.import_tasks: localization.yml
+  tags: ['raspi_config', 'raspi_config:localization']
+
 - name: Run System tasks
   ansible.builtin.import_tasks: system.yml
   tags: ['raspi_config', 'raspi_config:system']
@@ -22,10 +28,6 @@
 - name: Run Performance tasks
   ansible.builtin.import_tasks: performance.yml
   tags: ['raspi_config', 'raspi_config:performance']
-
-- name: Run Localization tasks
-  ansible.builtin.import_tasks: localization.yml
-  tags: ['raspi_config', 'raspi_config:localization']
 
 - name: Run Advanced tasks
   ansible.builtin.import_tasks: advanced.yml
