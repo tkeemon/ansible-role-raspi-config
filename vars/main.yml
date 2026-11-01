@@ -1,6 +1,606 @@
 ---
-raspi_config_boot_behavior_dict:
-   console: B1
-   console_autologin: B2
-   desktop: B3
-   desktop_autologin: B4
+# Internal data tables for tkeemon.raspi_config.
+# Role_Variables live in defaults/main.yml. This file holds only internal data.
+# Deprecated and renamed variable names appear below as list data only. The
+# role never defines them as variables.
+
+# Change_Task argv in check mode. Reports changed and touches nothing.
+raspi_config__noop_argv:
+  - /bin/true
+
+# Pi_Model values returned by `raspi-config nonint get_pi_type`.
+raspi_config__all_models: [0, 1, 2, 3, 4, 5]
+
+# Model_Gates. Key is TASK_NAME. Options not listed apply to all models.
+raspi_config__option_models:
+  overclock: [1, 2]
+  fan: [4]
+  hdmi_4kp60: [4]
+  usb_current: [5]
+  pcie_speed: [5]
+  underscan_hdmi2: [4, 5]
+
+# Board type codes (from the /proc/cpuinfo revision) excluded per Option.
+# 0x13 Pi 400, 0x19 Pi 500, 0x18 CM5, 0x1a Pi 500+.
+raspi_config__board_exclusions:
+  composite: [0x13, 0x19, 0x18, 0x1a]
+  fan: [0x13, 0x19]
+
+# One entry per boolean Option, keyed by TASK_NAME.
+# true_output: the check output (string) that means the Role_Variable value true.
+#              null where the Check_Task does not print a single 0/1 value
+#              (A1 prints "<can_expand> <free_bytes>", A6 uses stat).
+# reboot:      true when the Upstream_Script menu function sets ASK_TO_REBOOT=1.
+raspi_config__options:
+  console_autologin:
+    menu: S6a
+    submenu: system
+    variable: raspi_config_enable_console_autologin
+    true_output: '0'
+    reboot: true
+  desktop_autologin:
+    menu: S6b
+    submenu: system
+    variable: raspi_config_enable_desktop_autologin
+    true_output: '0'
+    reboot: true
+  splash_screen:
+    menu: S7
+    submenu: system
+    variable: raspi_config_enable_boot_splash_screen
+    true_output: '0'
+    reboot: false
+  power_led:
+    menu: S8
+    submenu: system
+    variable: raspi_config_power_led_flash_during_activity
+    true_output: '0'
+    reboot: false
+  sudo_password:
+    menu: S10
+    submenu: system
+    variable: raspi_config_enable_sudo_password
+    true_output: '0'
+    reboot: false
+  screen_blanking:
+    menu: D2
+    submenu: display
+    variable: raspi_config_enable_screen_blanking
+    true_output: '0'
+    reboot: true
+  composite:
+    menu: D4
+    submenu: display
+    variable: raspi_config_enable_composite_video
+    true_output: '0'
+    reboot: true
+  hdmi_4kp60:
+    menu: D5
+    submenu: display
+    variable: raspi_config_enable_hdmi_4kp60
+    true_output: '0'
+    reboot: true
+  ssh:
+    menu: I1
+    submenu: interface
+    variable: raspi_config_enable_ssh
+    true_output: '0'
+    reboot: false
+  vnc:
+    menu: I3
+    submenu: interface
+    variable: raspi_config_enable_vnc
+    true_output: '0'
+    reboot: false
+  spi:
+    menu: I4
+    submenu: interface
+    variable: raspi_config_enable_spi
+    true_output: '0'
+    reboot: false
+  i2c:
+    menu: I5
+    submenu: interface
+    variable: raspi_config_enable_i2c
+    true_output: '0'
+    reboot: false
+  serial_console:
+    menu: I6a
+    submenu: interface
+    variable: raspi_config_enable_serial_console
+    true_output: '0'
+    reboot: true
+  serial_hardware:
+    menu: I6b
+    submenu: interface
+    variable: raspi_config_enable_serial_hardware
+    true_output: '0'
+    reboot: true
+  one_wire:
+    menu: I7
+    submenu: interface
+    variable: raspi_config_enable_one_wire
+    true_output: '0'
+    reboot: true
+  # P2 compares three readings (see the design's P2 state rule). Each reading
+  # prints 0 for enabled or active.
+  overlayfs:
+    menu: P2
+    submenu: performance
+    variable: raspi_config_enable_overlayfs
+    true_output: '0'
+    reboot: true
+  fan:
+    menu: P3
+    submenu: performance
+    variable: raspi_config_enable_gpio_fan
+    true_output: '0'
+    reboot: true
+  # get_usb_current prints 1 when the default limit applies (clarification C3:
+  # do_usb_current never sets ASK_TO_REBOOT, so reboot stays false).
+  usb_current:
+    menu: P4
+    submenu: performance
+    variable: raspi_config_enable_usb_current_limit
+    true_output: '1'
+    reboot: false
+  expand_filesystem:
+    menu: A1
+    submenu: advanced
+    variable: raspi_config_expand_filesystem
+    true_output: null
+    reboot: true
+  net_names:
+    menu: A2
+    submenu: advanced
+    variable: raspi_config_enable_predictable_net_names
+    true_output: '0'
+    reboot: true
+  beta_access:
+    menu: A6
+    submenu: advanced
+    variable: raspi_config_enable_beta_access
+    true_output: null
+    reboot: true
+  pcie_speed:
+    menu: A8
+    submenu: advanced
+    variable: raspi_config_enable_pcie_gen3
+    true_output: '0'
+    reboot: true
+  # get_wifi_power_save prints 1 when power saving is enabled (clarification C1).
+  wifi_power_save:
+    menu: A12
+    submenu: advanced
+    variable: raspi_config_enable_wifi_power_save
+    true_output: '1'
+    reboot: false
+  # get_link_local_fallback prints 1 when the fallback is enabled (C2).
+  link_local_fallback:
+    menu: A13
+    submenu: advanced
+    variable: raspi_config_enable_link_local_fallback
+    true_output: '1'
+    reboot: true
+
+# Accepted values of enumerated Role_Variables (case-sensitive, exact match).
+# "" is listed where the Option accepts the Unmanaged_Value.
+raspi_config__enums:
+  raspi_config_boot_behavior: [console, desktop]
+  raspi_config_browser: ["", chromium, firefox]
+  raspi_config_vnc_resolution:
+    - ""
+    - "640x480"
+    - "720x480"
+    - "800x600"
+    - "1024x768"
+    - "1280x720"
+    - "1280x1024"
+    - "1600x1200"
+    - "1920x1080"
+  raspi_config_onscreen_keyboard: [always_on, autodetect, always_off]
+  # "off" is quoted: unquoted off is a boolean in YAML 1.1.
+  raspi_config_rpi_connect: ["off", remote_shell, screen_sharing]
+  raspi_config_desktop_backend: [x11, labwc]
+  raspi_config_log_storage: [default, volatile, persistent, auto, none]
+
+# P1 profiles per Pi_Model: profile name -> arm_freq in MHz.
+# "None" (arm_freq absent or 0) is accepted on both models and is not listed.
+raspi_config__overclock_profiles:
+  1:
+    Modest: 800
+    Medium: 900
+    High: 950
+    Turbo: 1000
+  2:
+    High: 1000
+
+# A11: value -> argument of do_journald_storage.
+raspi_config__log_storage_codes:
+  default: 1
+  volatile: 2
+  persistent: 3
+  auto: 4
+  none: 5
+
+# D6: mode -> argument of do_squeekboard.
+raspi_config__squeekboard_codes:
+  always_on: S1
+  autodetect: S2
+  always_off: S3
+
+# D6: get_squeekboard output -> mode (reverse of the map above).
+raspi_config__squeekboard_outputs:
+  '0': always_on
+  '1': autodetect
+  '2': always_off
+
+# Fresh_Install_Default of every Role_Variable. A unit test asserts that this
+# map equals defaults/main.yml.
+raspi_config__fresh_install_defaults:
+  raspi_config_user: ""
+  raspi_config_allow_reboot: false
+  raspi_config_wifi_ssid: ""
+  raspi_config_wifi_password: ""
+  raspi_config_audio_output: ""
+  raspi_config_password: ""
+  raspi_config_hostname: raspberrypi
+  raspi_config_boot_behavior: console
+  raspi_config_enable_console_autologin: false
+  raspi_config_enable_desktop_autologin: false
+  raspi_config_enable_boot_splash_screen: false
+  raspi_config_power_led_flash_during_activity: true
+  raspi_config_browser: ""
+  raspi_config_enable_sudo_password: false
+  raspi_config_underscan_outputs: []
+  raspi_config_enable_screen_blanking: true
+  raspi_config_vnc_resolution: ""
+  raspi_config_enable_composite_video: false
+  raspi_config_enable_hdmi_4kp60: false
+  raspi_config_onscreen_keyboard: always_off
+  raspi_config_onscreen_keyboard_output: ""
+  raspi_config_enable_ssh: true
+  raspi_config_rpi_connect: "off"
+  raspi_config_enable_vnc: false
+  raspi_config_enable_spi: false
+  raspi_config_enable_i2c: false
+  raspi_config_enable_serial_console: true
+  raspi_config_enable_serial_hardware: false
+  raspi_config_enable_one_wire: false
+  raspi_config_overclock_settings: "None"
+  raspi_config_enable_overlayfs: false
+  raspi_config_enable_gpio_fan: false
+  raspi_config_gpio_fan_pin: 14
+  raspi_config_gpio_fan_temp: 80
+  raspi_config_enable_usb_current_limit: true
+  raspi_config_locale: en_GB.UTF-8
+  raspi_config_time_zone: Europe/London
+  raspi_config_keyboard_layout: gb
+  raspi_config_wifi_country: ""
+  raspi_config_expand_filesystem: false
+  raspi_config_enable_predictable_net_names: false
+  raspi_config_http_proxy: ""
+  raspi_config_https_proxy: ""
+  raspi_config_ftp_proxy: ""
+  raspi_config_rsync_proxy: ""
+  raspi_config_no_proxy: ""
+  raspi_config_enable_beta_access: false
+  raspi_config_desktop_backend: labwc
+  raspi_config_enable_pcie_gen3: false
+  raspi_config_log_storage: default
+  raspi_config_enable_wifi_power_save: true
+  raspi_config_enable_link_local_fallback: false
+
+# Variables for Options the trixie Upstream_Script no longer offers.
+# Listed as data so the role can warn when a user defines one.
+raspi_config__deprecated_variables:
+  - name: raspi_config_enable_legacy_camera
+    option: Legacy Camera
+  - name: raspi_config_enable_remote_gpio
+    option: Remote GPIO
+  - name: raspi_config_gpu_memory
+    option: GPU Memory
+  - name: raspi_config_wait_on_network
+    option: Network at Boot
+  - name: raspi_config_enable_xcompmgr
+    option: xcompmgr Compositor
+  - name: raspi_config_enable_glamor
+    option: Glamor
+
+# Variables from the previous release that fail validation when defined.
+raspi_config__renamed_variables:
+  - name: raspi_config_enable_serial_port
+    replacements:
+      - raspi_config_enable_serial_console
+      - raspi_config_enable_serial_hardware
+  - name: raspi_config_enable_wayland
+    replacements:
+      - raspi_config_desktop_backend
+
+# ---------------------------------------------------------------------------
+# Validation predicates
+#
+# Every raspi_config__valid_* value is a lazily evaluated Jinja expression.
+# Ansible renders it when tasks/validate.yml (or a unit test) references it, so
+# it sees the Role_Variable values of that play. A predicate is true when the
+# value is acceptable. The Unmanaged_Value ("") is acceptable wherever the
+# Option accepts it. Predicates never coerce: "yes", "true", 1 and 0 are not
+# booleans, and a float is not an integer.
+#
+# Dict-valued predicates map a variable name to true or false so that
+# validate.yml can name the failing variable. The expressions avoid
+# anchored regular expressions on user input, because `$` also matches before
+# a trailing newline.
+#
+# Reference-file predicates read the decoded text of a Target_Host file from
+# these variables, which tasks/validate.yml sets after it reads the file. An
+# unset variable (file absent or unreadable) makes the predicate false when the
+# Role_Variable is not "":
+#   raspi_config__iso3166_tab        /usr/share/zoneinfo/iso3166.tab
+#   raspi_config__supported_locales  /usr/share/i18n/SUPPORTED
+#   raspi_config__xkb_base_lst       /usr/share/X11/xkb/rules/base.lst
+# Lines are split on "\n" only.
+# ---------------------------------------------------------------------------
+
+# Boolean Role_Variables: the value must be of boolean type (Jinja test
+# `boolean`, which does no coercion).
+raspi_config__valid_boolean:
+  raspi_config_allow_reboot: "{{ raspi_config_allow_reboot is boolean }}"
+  raspi_config_enable_console_autologin: "{{ raspi_config_enable_console_autologin is boolean }}"
+  raspi_config_enable_desktop_autologin: "{{ raspi_config_enable_desktop_autologin is boolean }}"
+  raspi_config_enable_boot_splash_screen: "{{ raspi_config_enable_boot_splash_screen is boolean }}"
+  raspi_config_power_led_flash_during_activity: "{{ raspi_config_power_led_flash_during_activity is boolean }}"
+  raspi_config_enable_sudo_password: "{{ raspi_config_enable_sudo_password is boolean }}"
+  raspi_config_enable_screen_blanking: "{{ raspi_config_enable_screen_blanking is boolean }}"
+  raspi_config_enable_composite_video: "{{ raspi_config_enable_composite_video is boolean }}"
+  raspi_config_enable_hdmi_4kp60: "{{ raspi_config_enable_hdmi_4kp60 is boolean }}"
+  raspi_config_enable_ssh: "{{ raspi_config_enable_ssh is boolean }}"
+  raspi_config_enable_vnc: "{{ raspi_config_enable_vnc is boolean }}"
+  raspi_config_enable_spi: "{{ raspi_config_enable_spi is boolean }}"
+  raspi_config_enable_i2c: "{{ raspi_config_enable_i2c is boolean }}"
+  raspi_config_enable_serial_console: "{{ raspi_config_enable_serial_console is boolean }}"
+  raspi_config_enable_serial_hardware: "{{ raspi_config_enable_serial_hardware is boolean }}"
+  raspi_config_enable_one_wire: "{{ raspi_config_enable_one_wire is boolean }}"
+  raspi_config_enable_overlayfs: "{{ raspi_config_enable_overlayfs is boolean }}"
+  raspi_config_enable_gpio_fan: "{{ raspi_config_enable_gpio_fan is boolean }}"
+  raspi_config_enable_usb_current_limit: "{{ raspi_config_enable_usb_current_limit is boolean }}"
+  raspi_config_expand_filesystem: "{{ raspi_config_expand_filesystem is boolean }}"
+  raspi_config_enable_predictable_net_names: "{{ raspi_config_enable_predictable_net_names is boolean }}"
+  raspi_config_enable_beta_access: "{{ raspi_config_enable_beta_access is boolean }}"
+  raspi_config_enable_pcie_gen3: "{{ raspi_config_enable_pcie_gen3 is boolean }}"
+  raspi_config_enable_wifi_power_save: "{{ raspi_config_enable_wifi_power_save is boolean }}"
+  raspi_config_enable_link_local_fallback: "{{ raspi_config_enable_link_local_fallback is boolean }}"
+
+# Enumerated Role_Variables: exact, case-sensitive membership in
+# raspi_config__enums (which lists "" where the Option accepts it).
+raspi_config__valid_enum:
+  raspi_config_boot_behavior: "{{ raspi_config_boot_behavior in raspi_config__enums.raspi_config_boot_behavior }}"
+  raspi_config_browser: "{{ raspi_config_browser in raspi_config__enums.raspi_config_browser }}"
+  raspi_config_vnc_resolution: "{{ raspi_config_vnc_resolution in raspi_config__enums.raspi_config_vnc_resolution }}"
+  raspi_config_onscreen_keyboard: "{{ raspi_config_onscreen_keyboard in raspi_config__enums.raspi_config_onscreen_keyboard }}"
+  raspi_config_rpi_connect: "{{ raspi_config_rpi_connect in raspi_config__enums.raspi_config_rpi_connect }}"
+  raspi_config_desktop_backend: "{{ raspi_config_desktop_backend in raspi_config__enums.raspi_config_desktop_backend }}"
+  raspi_config_log_storage: "{{ raspi_config_log_storage in raspi_config__enums.raspi_config_log_storage }}"
+
+# Integer ranges (inclusive). The value must be an integer, not a boolean or a
+# float.
+raspi_config__ranges:
+  raspi_config_gpio_fan_pin:
+    low: 2
+    high: 27
+  raspi_config_gpio_fan_temp:
+    low: 60
+    high: 120
+
+raspi_config__valid_range:
+  raspi_config_gpio_fan_pin: >-
+    {{ raspi_config_gpio_fan_pin is integer
+    and raspi_config_gpio_fan_pin is not boolean
+    and raspi_config__ranges.raspi_config_gpio_fan_pin.low
+    <= raspi_config_gpio_fan_pin
+    <= raspi_config__ranges.raspi_config_gpio_fan_pin.high }}
+  raspi_config_gpio_fan_temp: >-
+    {{ raspi_config_gpio_fan_temp is integer
+    and raspi_config_gpio_fan_temp is not boolean
+    and raspi_config__ranges.raspi_config_gpio_fan_temp.low
+    <= raspi_config_gpio_fan_temp
+    <= raspi_config__ranges.raspi_config_gpio_fan_temp.high }}
+
+# Renamed variables (Requirement 5.7): true when the variable is not defined.
+# Any definition fails, whatever the value (including "", null and false).
+raspi_config__valid_renamed:
+  raspi_config_enable_serial_port: "{{ raspi_config_enable_serial_port is not defined }}"
+  raspi_config_enable_wayland: "{{ raspi_config_enable_wayland is not defined }}"
+
+# Values raspi_config_boot_behavior accepted in the previous release (R10.6).
+# They moved to the two auto login Role_Variables.
+raspi_config__removed_boot_behavior_values:
+  - console_autologin
+  - desktop_autologin
+
+# True unless raspi_config_boot_behavior holds a removed value. validate.yml
+# checks this before the generic enumeration so the user gets the specific
+# message.
+raspi_config__valid_boot_behavior_not_removed: >-
+  {{ raspi_config_boot_behavior not in raspi_config__removed_boot_behavior_values }}
+
+# P1 Overclock: the accepted values depend on the Pi_Model. On a model without
+# profiles (the Option is gated off), any profile name of either model and
+# "None" is accepted, so a typo still fails.
+raspi_config__overclock_accepted: >-
+  {{ ['None'] + (
+  raspi_config__overclock_profiles[raspi_config__pi_model | default(-1) | int].keys() | list
+  if (raspi_config__pi_model | default(-1) | int) in raspi_config__overclock_profiles
+  else raspi_config__overclock_profiles.values() | map('list') | flatten | unique | list
+  ) }}
+
+raspi_config__valid_overclock: >-
+  {{ raspi_config_overclock_settings in raspi_config__overclock_accepted }}
+
+# S4 Hostname: RFC 1123 label. 1 to 63 ASCII letters, digits or hyphens, with
+# no hyphen at either end.
+raspi_config__valid_hostname: >-
+  {{ raspi_config_hostname is string
+  and 1 <= (raspi_config_hostname | length) <= 63
+  and raspi_config_hostname.isascii()
+  and raspi_config_hostname.replace('-', '').isalnum()
+  and raspi_config_hostname[0] != '-'
+  and raspi_config_hostname[-1] != '-' }}
+
+# S1 Wireless LAN: SSID length in bytes (UTF-8). Jinja `length` counts
+# characters, so the value is percent-encoded and each %XX sequence collapses
+# to one character. Unreserved characters stay one character, one byte each.
+raspi_config__wifi_ssid_byte_length: >-
+  {{ raspi_config_wifi_ssid | string | urlencode
+  | regex_replace('%[0-9A-Fa-f]{2}', 'x') | length }}
+
+# At most 32 bytes in UTF-8. "" is the Unmanaged_Value.
+raspi_config__valid_wifi_ssid: >-
+  {{ raspi_config_wifi_ssid == ''
+  or (raspi_config_wifi_ssid is string
+  and (raspi_config__wifi_ssid_byte_length | int) <= 32) }}
+
+# 8 to 63 characters. "" is the Unmanaged_Value.
+raspi_config__valid_wifi_password: >-
+  {{ raspi_config_wifi_password == ''
+  or (raspi_config_wifi_password is string
+  and 8 <= (raspi_config_wifi_password | length) <= 63) }}
+
+# R9.3: an SSID needs a WLAN country.
+raspi_config__valid_wifi_country_for_ssid: >-
+  {{ raspi_config_wifi_ssid == ''
+  or (raspi_config_wifi_country is string and raspi_config_wifi_country != '') }}
+
+# C12: do_composite 0 and do_pi4video 0 contradict each other, so both options
+# cannot be true together.
+raspi_config__valid_display_exclusive: >-
+  {{ not (raspi_config_enable_composite_video is true
+  and raspi_config_enable_hdmi_4kp60 is true) }}
+
+# D1 Underscan: a list of at most two unique entries from HDMI-1 and HDMI-2.
+# [] is the way to disable underscan on every output.
+raspi_config__underscan_allowed_outputs:
+  - HDMI-1
+  - HDMI-2
+
+raspi_config__valid_underscan_outputs: >-
+  {{ raspi_config_underscan_outputs is iterable
+  and raspi_config_underscan_outputs is not string
+  and raspi_config_underscan_outputs is not mapping
+  and (raspi_config_underscan_outputs | length) <= 2
+  and (raspi_config_underscan_outputs
+  | reject('in', raspi_config__underscan_allowed_outputs) | list | length) == 0
+  and (raspi_config_underscan_outputs | unique | list | length)
+  == (raspi_config_underscan_outputs | length) }}
+
+# A3 Network Proxy Settings: "" or a string with no whitespace character and
+# at most 2048 characters. split() with no argument splits on Unicode
+# whitespace, so a non-empty string without whitespace is its own single item.
+raspi_config__proxy_max_length: 2048
+
+raspi_config__valid_proxy:
+  raspi_config_http_proxy: >-
+    {{ raspi_config_http_proxy == ''
+    or (raspi_config_http_proxy is string
+    and (raspi_config_http_proxy | length) <= raspi_config__proxy_max_length
+    and raspi_config_http_proxy.split() == [raspi_config_http_proxy]) }}
+  raspi_config_https_proxy: >-
+    {{ raspi_config_https_proxy == ''
+    or (raspi_config_https_proxy is string
+    and (raspi_config_https_proxy | length) <= raspi_config__proxy_max_length
+    and raspi_config_https_proxy.split() == [raspi_config_https_proxy]) }}
+  raspi_config_ftp_proxy: >-
+    {{ raspi_config_ftp_proxy == ''
+    or (raspi_config_ftp_proxy is string
+    and (raspi_config_ftp_proxy | length) <= raspi_config__proxy_max_length
+    and raspi_config_ftp_proxy.split() == [raspi_config_ftp_proxy]) }}
+  raspi_config_rsync_proxy: >-
+    {{ raspi_config_rsync_proxy == ''
+    or (raspi_config_rsync_proxy is string
+    and (raspi_config_rsync_proxy | length) <= raspi_config__proxy_max_length
+    and raspi_config_rsync_proxy.split() == [raspi_config_rsync_proxy]) }}
+  raspi_config_no_proxy: >-
+    {{ raspi_config_no_proxy == ''
+    or (raspi_config_no_proxy is string
+    and (raspi_config_no_proxy | length) <= raspi_config__proxy_max_length
+    and raspi_config_no_proxy.split() == [raspi_config_no_proxy]) }}
+
+# D7 Keyboard Output: name syntax only (letters, digits, dot, underscore,
+# hyphen). validate.yml checks the DRM connector on the Target_Host separately.
+raspi_config__valid_onscreen_keyboard_output_name: >-
+  {{ raspi_config_onscreen_keyboard_output == ''
+  or (raspi_config_onscreen_keyboard_output is string
+  and (raspi_config_onscreen_keyboard_output | length) > 0
+  and (raspi_config_onscreen_keyboard_output
+  | regex_replace('[A-Za-z0-9._-]', '')) == '') }}
+
+# L4 WLAN Country: two uppercase ASCII letters and a non-comment line of
+# iso3166.tab that starts with the code followed by a tab.
+raspi_config__valid_wifi_country: |-
+  {%- if raspi_config_wifi_country == '' -%}
+  True
+  {%- elif raspi_config_wifi_country is not string
+  or (raspi_config_wifi_country | length) != 2
+  or not raspi_config_wifi_country.isascii()
+  or not raspi_config_wifi_country.isalpha()
+  or not raspi_config_wifi_country.isupper()
+  or raspi_config__iso3166_tab is not defined
+  or raspi_config__iso3166_tab is not string -%}
+  False
+  {%- else -%}
+  {%- set ns = namespace(found=false) -%}
+  {%- for line in raspi_config__iso3166_tab.split('\n') -%}
+  {%- if line.startswith(raspi_config_wifi_country ~ '\t') -%}
+  {%- set ns.found = true -%}
+  {%- endif -%}
+  {%- endfor -%}
+  {{ ns.found }}
+  {%- endif -%}
+
+# L1 Locale: equals the first whitespace-separated field of a line of
+# /usr/share/i18n/SUPPORTED.
+raspi_config__valid_locale: |-
+  {%- if raspi_config_locale == '' -%}
+  True
+  {%- elif raspi_config_locale is not string
+  or raspi_config__supported_locales is not defined
+  or raspi_config__supported_locales is not string -%}
+  False
+  {%- else -%}
+  {%- set ns = namespace(found=false) -%}
+  {%- for line in raspi_config__supported_locales.split('\n') -%}
+  {%- if line.split()[:1] == [raspi_config_locale] -%}
+  {%- set ns.found = true -%}
+  {%- endif -%}
+  {%- endfor -%}
+  {{ ns.found }}
+  {%- endif -%}
+
+# L3 Keyboard layout: equals the first field of a line in the "! layout"
+# section of base.lst. Lines in the model, variant and option sections do not
+# count. A line that starts with "!" opens a new section.
+raspi_config__valid_keyboard_layout: |-
+  {%- if raspi_config_keyboard_layout == '' -%}
+  True
+  {%- elif raspi_config_keyboard_layout is not string
+  or raspi_config__xkb_base_lst is not defined
+  or raspi_config__xkb_base_lst is not string -%}
+  False
+  {%- else -%}
+  {%- set ns = namespace(in_layout=false, found=false) -%}
+  {%- for line in raspi_config__xkb_base_lst.split('\n') -%}
+  {%- if line.startswith('!') -%}
+  {%- set ns.in_layout = (line[1:].split() == ['layout']) -%}
+  {%- elif ns.in_layout and line.split()[:1] == [raspi_config_keyboard_layout] -%}
+  {%- set ns.found = true -%}
+  {%- endif -%}
+  {%- endfor -%}
+  {{ ns.found }}
+  {%- endif -%}
+
+# L2 Timezone: no ".." path component. validate.yml checks that
+# /usr/share/zoneinfo/<value> is a regular file on the Target_Host.
+raspi_config__valid_time_zone_path: >-
+  {{ raspi_config_time_zone == ''
+  or (raspi_config_time_zone is string
+  and '..' not in raspi_config_time_zone.split('/')) }}

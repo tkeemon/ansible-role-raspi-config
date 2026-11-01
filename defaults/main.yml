@@ -1,127 +1,254 @@
 ---
+# Defaults describe a freshly flashed Raspberry Pi OS Lite trixie image with SSH
+# enabled. An empty string ("") is the Unmanaged_Value: the role then leaves the
+# Option untouched. Pi_Model values: 0 = Zero/Zero W, 1, 2, 3 (also Zero 2 W),
+# 4, 5.
 
-### system.yml
+# Not an Option. Account whose per-user settings the role changes.
+# Accepted values: the name of an existing account. "" accepted: yes, the role
+# then uses the account with UID 1000.
+raspi_config_user: ""
 
-# wireless LAN
+# Not an Option. Reboot the Target_Host when a change needs it.
+# Accepted values: true | false. "" accepted: no.
+raspi_config_allow_reboot: false
+
+### system
+
+# S1 Wireless LAN: SSID.
+# Accepted values: any string up to 32 bytes. "" accepted: yes (unmanaged).
+# Setting an SSID also requires raspi_config_wifi_country. Models: all.
 raspi_config_wifi_ssid: ""
+
+# S1 Wireless LAN: passphrase.
+# Accepted values: 8 to 63 characters. "" accepted: yes (unmanaged). Models: all.
 raspi_config_wifi_password: ""
 
-# audio
+# S2 Audio: output number as listed by raspi-config on the Target_Host.
+# Accepted values: an output number available on the Target_Host.
+# "" accepted: yes (unmanaged). Models: all.
+raspi_config_audio_output: ""
 
-# password
-raspi_config_user: pi
-raspi_config_password: raspberry
+# S3 Password: new password of raspi_config_user.
+# Accepted values: any string. "" accepted: yes (unmanaged). Models: all.
+raspi_config_password: ""
 
-# hostname
+# S4 Hostname.
+# Accepted values: RFC 1123 label (1 to 63 letters, digits, hyphens; no leading
+# or trailing hyphen). "" accepted: no. Models: all.
 raspi_config_hostname: raspberrypi
-# raspi_config_enable_predictable_net_names: false
 
-
-# auto login
-
-# network at boot 
-
-# splash screen
-raspi_config_enable_boot_splash_screen: true
-
-# power LED
-raspi_config_power_led_flash_during_activity: false
-
-# boot behavior should be one of:
-#    console
-#    console_autologin
-#    desktop
-#    desktop_autologin
+# S5 Boot: boot to console or desktop. Desktop requires the lightdm package.
+# Accepted values: console | desktop. "" accepted: no. Models: all.
 raspi_config_boot_behavior: console
 
-raspi_config_wait_on_network: false
+# S6 Auto Login: log in automatically on the console.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_console_autologin: false
 
-### display.yml
-# "D1 Resolution" "Set a specific screen resolution" \
-# "D2 Underscan" "Remove black border around screen" \
-# "D3 Pixel Doubling" "Enable/disable 2x2 pixel mapping" \
-# "D4 Screen Blanking" "Enable/disable screen blanking" \
+# S6 Auto Login: log in automatically on the desktop. Requires lightdm.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_desktop_autologin: false
+
+# S7 Splash Screen: show the boot splash. Needs the pix Plymouth theme, which
+# Raspberry Pi OS Lite does not ship.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_boot_splash_screen: false
+
+# S8 Power LED: flash the power LED during activity (false = always on).
+# Accepted values: true | false. "" accepted: no. Models: all (skipped when the
+# Target_Host cannot change the power LED).
+raspi_config_power_led_flash_during_activity: true
+
+# S9 Browser: default web browser.
+# Accepted values: chromium | firefox. "" accepted: yes (unmanaged). Models: all.
+raspi_config_browser: ""
+
+# S10 Admin Password: require a password for sudo.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_sudo_password: false
+
+### display
+
+# D1 Underscan: HDMI outputs with underscan enabled.
+# Accepted values: a list of up to two unique entries from HDMI-1, HDMI-2.
+# "" accepted: n/a (use [] to disable underscan on all outputs).
+# Models: all (HDMI-2: 4, 5).
+raspi_config_underscan_outputs: []
+
+# D2 Screen Blanking.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_enable_screen_blanking: true
 
-# "D5 VNC Resolution" "Set resolution for headless use" \
-# valid VNC resolutions:
-  # 640x480
-  # 720x480
-  # 800x600
-  # 1024x768
-  # 1280x720
-  # 1280x1024
-  # 1600x1200
-  # 1920x1080
-raspi_config_vnc_resolution: 640x480
+# D3 VNC Resolution.
+# Accepted values: 640x480 | 720x480 | 800x600 | 1024x768 | 1280x720 |
+# 1280x1024 | 1600x1200 | 1920x1080. "" accepted: yes (unmanaged). Models: all.
+raspi_config_vnc_resolution: ""
 
-# "D6 Composite" "Set options for composite output" \
+# D4 Composite video output.
+# Accepted values: true | false. "" accepted: no. Cannot be true together with
+# raspi_config_enable_hdmi_4kp60.
+# Models: all except Pi 400, Pi 500, and Compute Module 5.
 raspi_config_enable_composite_video: false
 
-### interface.yml
-# "I1 Legacy Camera" "Enable/disable legacy camera support" \
-raspi_config_enable_legacy_camera: false
-# "I2 SSH" "Enable/disable remote command line access using SSH" \
-raspi_config_enable_ssh: false
-# "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
+# D5 4Kp60 HDMI.
+# Accepted values: true | false. "" accepted: no. Models: 4.
+raspi_config_enable_hdmi_4kp60: false
+
+# D6 Onscreen Keyboard. Requires the squeekboard package.
+# Accepted values: always_on | autodetect | always_off. "" accepted: no.
+# Models: all.
+raspi_config_onscreen_keyboard: always_off
+
+# D7 Keyboard Output: display that shows the onscreen keyboard. Requires the
+# squeekboard package.
+# Accepted values: a DRM connector name that exists on the Target_Host in
+# /sys/class/drm (for example HDMI-A-1). "" accepted: yes (unmanaged).
+# Models: all.
+raspi_config_onscreen_keyboard_output: ""
+
+### interface
+
+# I1 SSH. Setting false stops SSH on the Target_Host and ends Ansible access.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_ssh: true
+
+# I2 Raspberry Pi Connect.
+# Accepted values: off | remote_shell | screen_sharing. "" accepted: no.
+# Models: all.
+raspi_config_rpi_connect: "off"
+
+# I3 VNC.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_enable_vnc: false
-# "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
+
+# I4 SPI.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_enable_spi: false
-# "I5 I2C" "Enable/disable automatic loading of I2C kernel module" \
+
+# I5 I2C.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_enable_i2c: false
-# "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
-raspi_config_enable_serial_port: false
-# "I7 1-Wire" "Enable/disable one-wire interface" \
+
+# I6 Serial Port: login shell on the serial console.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_serial_console: true
+
+# I6 Serial Port: serial port hardware.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_serial_hardware: false
+
+# I7 1-Wire.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_enable_one_wire: false
-# "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
-raspi_config_enable_remote_gpio: false
 
-### performance.yml
-# "P1 Overclock" "Configure CPU overclocking" \
-# only works for Pi1 and Pi2
-# valid values are: 
-#   Pi1: None|Modest|Medium|High|Turbo
-#   Pi2: None|High
-raspi_config_overclock_settings: None 
-# "P2 GPU Memory" "Change the amount of memory made available to the GPU" \
-# valid values: 16|32|64|128|256
-raspi_config_gpu_memory: 128 
-# "P3 Overlay File System" "Enable/disable read-only file system" \
-raspi_config_enable_overlayfs: false 
-# "P4 Fan" "Set behaviour of GPIO fan" \
+### performance
+
+# P1 Overclock.
+# Accepted values: Pi_Model 1: None | Modest | Medium | High | Turbo;
+# Pi_Model 2: None | High. "" accepted: no. Models: 1, 2.
+raspi_config_overclock_settings: None
+
+# P2 Overlay File System: read-only root file system.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_overlayfs: false
+
+# P3 Fan: enable the GPIO fan.
+# Accepted values: true | false. "" accepted: no. Models: 4 (not Pi 400).
 raspi_config_enable_gpio_fan: false
-raspi_config_gpio_fan_pin: 14
-raspi_config_gpio_fan_temp: 80  # degrees Celsius between 60 and 120
 
-### localization.yml
-# "L1 Locale" "Configure language and regional settings" \
-#   values available on the Raspberry Pi in: /usr/share/i18n/SUPPORTED
+# P3 Fan: GPIO pin that drives the fan.
+# Accepted values: integer from 2 to 27. "" accepted: no. Models: 4 (not Pi 400).
+raspi_config_gpio_fan_pin: 14
+
+# P3 Fan: temperature in degrees Celsius at which the fan turns on.
+# Accepted values: integer from 60 to 120. "" accepted: no.
+# Models: 4 (not Pi 400).
+raspi_config_gpio_fan_temp: 80
+
+# P4 USB Current: true keeps the default USB current limit, false removes it.
+# Accepted values: true | false. "" accepted: no. Models: 5.
+raspi_config_enable_usb_current_limit: true
+
+### localization
+
+# L1 Locale.
+# Accepted values: a locale listed in /usr/share/i18n/SUPPORTED.
+# "" accepted: yes (unmanaged). Models: all.
 raspi_config_locale: en_GB.UTF-8
 
-# "L2 Timezone" "Configure time zone" \
+# L2 Timezone.
+# Accepted values: a zone file under /usr/share/zoneinfo/.
+# "" accepted: yes (unmanaged). Models: all.
 raspi_config_time_zone: Europe/London
 
-# "L3 Keyboard" "Set keyboard layout to match your keyboard" \
-# raspi_config_keyboard_layout:
+# L3 Keyboard layout.
+# Accepted values: a layout code from the layout section of
+# /usr/share/X11/xkb/rules/base.lst. "" accepted: yes (unmanaged). Models: all.
+raspi_config_keyboard_layout: gb
 
-# "L4 WLAN Country" "Set legal wireless channels for your country" \
-# 2 letter country codes can be found in the first column
-#    of: /usr/share/zoneinfo/iso3166.tab
-raspi_config_wifi_country: GB
+# L4 WLAN Country.
+# Accepted values: a two-letter code from the first column of
+# /usr/share/zoneinfo/iso3166.tab. "" accepted: yes (unmanaged). Models: all.
+raspi_config_wifi_country: ""
 
-### advanced.yml
-# "A1 Expand Filesystem" "Ensures that all of the SD card is available" \
+### advanced
+
+# A1 Expand Filesystem. One way: true expands the file system when the
+# partition can grow, false changes nothing.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_expand_filesystem: false
-# "A2 GL Driver" "Enable/disable experimental desktop GL driver" \
-# "A3 Compositor" "Enable/disable xcompmgr composition manager" \
-raspi_config_enable_xcompmgr: false
-# "A4 Network Interface Names" "Enable/disable predictable network i/f names" \
+
+# A2 Network Interface Names: predictable network interface names.
+# Accepted values: true | false. "" accepted: no. Models: all.
 raspi_config_enable_predictable_net_names: false
-# "A5 Network Proxy Settings" "Configure network proxy settings" \
-# "A6 Boot Order" "Choose network or USB device boot" \
-# "A7 Bootloader Version" "Select latest or default boot ROM software" \
-# "A8 Glamor" "Enable/disable glamor graphics acceleration" \
-raspi_config_enable_glamor: false
-# "A9 Wayland" "Enable experimental Wayland backend" \
-raspi_config_enable_wayland: false
-# "AA Network Config" "Set network configuration tool" \
+
+# A3 Network Proxy Settings: HTTP proxy.
+# Accepted values: a string with no whitespace, up to 2048 characters.
+# "" accepted: yes (unmanaged). Models: all.
+raspi_config_http_proxy: ""
+
+# A3 Network Proxy Settings: HTTPS proxy.
+# Accepted values: a string with no whitespace, up to 2048 characters.
+# "" accepted: yes (unmanaged). Models: all.
+raspi_config_https_proxy: ""
+
+# A3 Network Proxy Settings: FTP proxy.
+# Accepted values: a string with no whitespace, up to 2048 characters.
+# "" accepted: yes (unmanaged). Models: all.
+raspi_config_ftp_proxy: ""
+
+# A3 Network Proxy Settings: rsync proxy.
+# Accepted values: a string with no whitespace, up to 2048 characters.
+# "" accepted: yes (unmanaged). Models: all.
+raspi_config_rsync_proxy: ""
+
+# A3 Network Proxy Settings: hosts that bypass the proxy (no_proxy).
+# Accepted values: a string with no whitespace, up to 2048 characters.
+# "" accepted: yes (unmanaged). Models: all.
+raspi_config_no_proxy: ""
+
+# A6 Beta Access: enable the Raspberry Pi beta software repository.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_beta_access: false
+
+# A7 Wayland: desktop backend. Needs /etc/lightdm/lightdm.conf.
+# Accepted values: x11 | labwc. "" accepted: no. Models: all.
+raspi_config_desktop_backend: labwc
+
+# A8 PCIe Speed: PCIe Gen 3.
+# Accepted values: true | false. "" accepted: no. Models: 5.
+raspi_config_enable_pcie_gen3: false
+
+# A11 Logging: where journald stores logs.
+# Accepted values: default | volatile | persistent | auto | none.
+# "" accepted: no. Models: all.
+raspi_config_log_storage: default
+
+# A12 WLAN Power Save. Needs a wireless interface.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_wifi_power_save: true
+
+# A13 Link-local Fallback: IPv4 link-local address when DHCP fails.
+# Accepted values: true | false. "" accepted: no. Models: all.
+raspi_config_enable_link_local_fallback: false

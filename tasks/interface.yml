@@ -1,58 +1,88 @@
 ---
 
-# "I1 Legacy Camera" "Enable/disable legacy camera support" \
-- name: Get current Legacy Camera status
-  ansible.builtin.command: raspi-config nonint get_legacy
-  changed_when: false
-  register: legacy_camera
+# "I1 SSH" "Enable/disable remote command line access using SSH" \
+# Reference check-then-change Option. Other boolean Options copy this shape.
+# The block carries only the base tag. Inner tasks add the :enable/:disable
+# suffix tags, because Ansible adds block tags to every inner task.
+- name: I1 SSH
   tags:
-  - raspi_config:interface:legacy_camera
-  - raspi_config:interface:legacy_camera:enable
-  - raspi_config:interface:legacy_camera:disable
+    - "raspi_config:interface:ssh"
+  block:
+    - name: Read SSH state (I1)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_ssh
+      register: raspi_config__check_ssh
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_ssh.rc != 0 or
+        (raspi_config__check_ssh.stdout | trim) not in ['0', '1']
+      tags:
+        - "raspi_config:interface:ssh:enable"
+        - "raspi_config:interface:ssh:disable"
 
-- name: Enable Legacy Camera support
-  ansible.builtin.command: raspi-config nonint do_legacy 0
-  changed_when: legacy_camera.stdout|int == 1
-  when: raspi_config_enable_legacy_camera
-  notify: Reboot
-  tags:
-  - raspi_config:interface:legacy_camera
-  - raspi_config:interface:legacy_camera:enable
+    - name: Enable SSH (I1)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_ssh', '0'] }}
+      register: raspi_config__change_ssh_enable
+      changed_when: true
+      check_mode: false
+      when:
+        - raspi_config_enable_ssh
+        - (raspi_config__check_ssh.stdout | trim) != raspi_config__options.ssh.true_output
+      tags:
+        - "raspi_config:interface:ssh:enable"
 
-- name: Disable Legacy Camera support
-  ansible.builtin.command: raspi-config nonint do_legacy 1
-  changed_when: legacy_camera.stdout|int == 0
-  when: not raspi_config_enable_legacy_camera
-  notify: Reboot
-  tags:
-  - raspi_config:interface:legacy_camera
-  - raspi_config:interface:legacy_camera:disable
+    - name: Disable SSH (I1)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_ssh', '1'] }}
+      register: raspi_config__change_ssh_disable
+      changed_when: true
+      check_mode: false
+      when:
+        - not raspi_config_enable_ssh
+        - (raspi_config__check_ssh.stdout | trim) == raspi_config__options.ssh.true_output
+      tags:
+        - "raspi_config:interface:ssh:disable"
 
-# "I2 SSH" "Enable/disable remote command line access using SSH" \
-- name: Get current SSH status
-  ansible.builtin.command: raspi-config nonint get_ssh
-  changed_when: false
-  register: ssh_status
-  tags:
-  - raspi_config:interface:ssh
-  - raspi_config:interface:ssh:enable
-  - raspi_config:interface:ssh:disable
-
-- name: Enable SSH support
-  ansible.builtin.command: raspi-config nonint do_ssh 0
-  changed_when: ssh_status.stdout|int == 1
-  when: raspi_config_enable_ssh
-  tags:
-  - raspi_config:interface:ssh
-  - raspi_config:interface:ssh:enable
-
-- name: Disable SSH support
-  ansible.builtin.command: raspi-config nonint do_ssh 1
-  changed_when: ssh_status.stdout|int == 0
-  when: not raspi_config_enable_ssh
-  tags:
-  - raspi_config:interface:ssh
-  - raspi_config:interface:ssh:disable
+    - name: Verify SSH state (I1)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_ssh
+      register: raspi_config__verify_ssh
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_ssh_enable is changed or raspi_config__change_ssh_disable is changed
+      failed_when: >-
+        raspi_config__verify_ssh.rc != 0 or
+        (raspi_config__verify_ssh.stdout | trim) not in ['0', '1'] or
+        ((raspi_config__verify_ssh.stdout | trim) == raspi_config__options.ssh.true_output)
+        != (raspi_config_enable_ssh | bool)
+      tags:
+        - "raspi_config:interface:ssh:enable"
+        - "raspi_config:interface:ssh:disable"
+  rescue:
+    - name: Report SSH failure (I1)
+      ansible.builtin.fail:
+        msg: >-
+          Option I1 SSH failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
+      tags:
+        - "raspi_config:interface:ssh:enable"
+        - "raspi_config:interface:ssh:disable"
 
 # "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
 - name: Get current VNC status
@@ -187,29 +217,3 @@
   tags:
   - raspi_config:interface:one_wire
   - raspi_config:interface:one_wire:disable
-
-# "I8 Remote GPIO" "Enable/disable remote access to GPIO pins" \
-- name: Get current Remote GPIO status
-  ansible.builtin.command: raspi-config nonint get_rgpio
-  changed_when: false
-  register: remote_gpio_status
-  tags:
-  - raspi_config:interface:remote_gpio
-  - raspi_config:interface:remote_gpio:enable
-  - raspi_config:interface:remote_gpio:disable
-
-- name: Enable Remote GPIO support
-  ansible.builtin.command: raspi-config nonint do_rgpio 0
-  changed_when: remote_gpio_status.stdout|int == 1
-  when: raspi_config_enable_remote_gpio
-  tags:
-  - raspi_config:interface:remote_gpio
-  - raspi_config:interface:remote_gpio:enable
-
-- name: Disable Remote GPIO support
-  ansible.builtin.command: raspi-config nonint do_rgpio 1
-  changed_when: remote_gpio_status.stdout|int == 0
-  when: not raspi_config_enable_remote_gpio
-  tags:
-  - raspi_config:interface:remote_gpio
-  - raspi_config:interface:remote_gpio:disable

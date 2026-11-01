@@ -15,13 +15,6 @@
 
 # "L2 Timezone" "Configure time zone" \
 
-# "L3 Keyboard" "Set keyboard layout to match your keyboard" \
-# "L4 WLAN Country" "Set legal wireless channels for your country" \
-
-
-  
-
-
 ### Changing timezone
 - name: Check current time zone
   ansible.builtin.command: "cat /etc/timezone"
@@ -43,14 +36,7 @@
   tags:
   - raspi_config:localization:time_zone
 
-# - name: Changing keyboard layout
-- name: Change keyboard layout
-  ansible.builtin.fail:
-    msg: "Changing keyboard layout hasn't been implemented yet"
-  ignore_errors: true
-  tags:
-  - raspi_config:localization:keyboard
-  
+# "L4 WLAN Country" "Set legal wireless channels for your country" \
 # - name: Changing wifi country
 - name: Get current wifi country
   ansible.builtin.command: raspi-config nonint get_wifi_country

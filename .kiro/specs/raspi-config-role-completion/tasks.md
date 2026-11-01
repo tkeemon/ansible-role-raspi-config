@@ -14,13 +14,13 @@ Every Option uses the pattern from the design: a `block` carrying the base tag `
 
 ## Tasks
 
-- [ ] 1. Phase 1: Set up role metadata, dependencies, and the controller-side test harness
-  - [-] 1.1 Update `meta/main.yml` and `requirements.txt`
+- [x] 1. Phase 1: Set up role metadata, dependencies, and the controller-side test harness
+  - [x] 1.1 Update `meta/main.yml` and `requirements.txt`
     - In `meta/main.yml`, set `min_ansible_version: "2.18"` and list Debian as the only platform with `trixie` as the only version
     - In `requirements.txt`, pin `ansible-core` (>= 2.18), `ansible-lint`, `yamllint`, `passlib`, `pytest`, and `hypothesis`; choose an `ansible-lint` version whose `schema[meta]` accepts `trixie`
     - _Requirements: 1.1, 1.2, 20.6_
 
-  - [-] 1.2 Create the pytest and Hypothesis harness in `tests/unit/`
+  - [x] 1.2 Create the pytest and Hypothesis harness in `tests/unit/`
     - `tests/unit/conftest.py`: fixtures that load `defaults/main.yml` and `vars/main.yml`, build an ansible-core `Templar` with those variables plus generated inputs, and render named expressions, `when` lists, `argv` templates, and `fail_msg` strings read from the parsed task files
     - A task-file parser helper that flattens every file under `tasks/` into tasks with their effective tags (import tags from `tasks/main.yml`, block tags, task tags, `always`), `notify`, `no_log`, `environment`, and enclosing block
     - `tests/unit/strategies.py` with the strategies from the design's Testing Strategy table (`yaml_values`, `enum_values`, `hostnames`, `ssids`, `psks`, reference-file generators, `proxy_values`, `check_results`, `pi_models`, `board_types`, `kv_files`, `deprecated_subsets`)
@@ -28,40 +28,40 @@ Every Option uses the pattern from the design: a `block` carrying the base tag `
     - `tests/unit/fixtures/raspi-config-trixie`: pinned copy of the Upstream_Script with the upstream commit hash in a header comment
     - _Requirements: 8.2, 20.6_
 
-  - [~] 1.3 Write example tests for role metadata
+  - [x] 1.3 Write example tests for role metadata
     - `tests/unit/test_meta.py`: platforms list is exactly Debian/`trixie`; `min_ansible_version` is `"2.18"`
     - _Requirements: 1.1, 1.2_
 
-- [ ] 2. Phase 1: Create internal data tables and restructure the defaults
-  - [~] 2.1 Create the data tables in `vars/main.yml`
+- [x] 2. Phase 1: Create internal data tables and restructure the defaults
+  - [x] 2.1 Create the data tables in `vars/main.yml`
     - Add `raspi_config__noop_argv`, `raspi_config__all_models`, `raspi_config__option_models`, `raspi_config__board_exclusions`, `raspi_config__options` (menu, submenu, variable, `true_output`, `reboot`), `raspi_config__enums`, `raspi_config__overclock_profiles`, `raspi_config__log_storage_codes`, `raspi_config__squeekboard_codes` with its reverse map, `raspi_config__fresh_install_defaults`, `raspi_config__deprecated_variables` (six entries), and `raspi_config__renamed_variables` (two entries)
     - Set `true_output` `'1'` for P4, A12 (C1), and A13 (C2), and `'0'` for the other boolean Options listed in the design
     - Set `reboot` flags from the design's reboot list; P4 stays `false` (C3)
     - Define no Deprecated_Variable or Renamed_Variable as a variable (names appear only as list data)
     - _Requirements: 4.1, 4.7, 5.7, 6.1, 7.1, 7.8, 8.6_
 
-  - [~] 2.2 Rewrite `defaults/main.yml`
+  - [x] 2.2 Rewrite `defaults/main.yml`
     - Non-Option variables first (`raspi_config_user: ""`, `raspi_config_allow_reboot: false`), then the six submenu groups in menu order, with the values from the design's Data Models table (Lite image baseline, C8; `raspi_config_enable_ssh: true`, C7)
     - Comment lines directly above each variable: menu number, accepted values or reference file, whether `""` is accepted, and Pi_Model values or `all`
     - Remove the six Deprecated_Variables, `raspi_config_enable_serial_port`, `raspi_config_enable_wayland`, the `raspberry` password default, and the `*_autologin` boot values; add `raspi_config_enable_serial_console`, `raspi_config_enable_serial_hardware`, `raspi_config_desktop_backend`, the two auto login booleans, and every new Option variable
     - _Requirements: 4.1, 4.2, 4.3, 4.5, 4.6, 4.7, 7.4, 8.6, 9.9, 10.1, 12.1_
 
-  - [~] 2.3 Write unit tests for defaults and data tables
+  - [x] 2.3 Write unit tests for defaults and data tables
     - `tests/unit/test_defaults.py`: `raspi_config__fresh_install_defaults` equals `defaults/main.yml`; group and menu order; the Unmanaged_Value defaults of 4.3; `raspi_config_allow_reboot` is `false`; the deprecated list is exactly the six names; `raspi_config__option_models` matches the trixie menu gates in the pinned Upstream_Script
     - _Requirements: 4.3, 4.6, 6.1, 7.4, 8.6, 9.9_
 
-  - [~] 2.4 Write property test for value maps
+  - [x] 2.4 Write property test for value maps
     - `tests/unit/test_p21_value_maps.py`
     - **Property 21: Value maps round-trip**
     - **Validates: Requirements 12.6, 14.1, 16.6**
 
 - [ ] 3. Phase 1: Implement preflight checks
-  - [~] 3.1 Create `tasks/preflight.yml`
+  - [x] 3.1 Create `tasks/preflight.yml`
     - The eight tasks in the design's preflight table, in order: minimal fact gathering when facts are missing, release assertion (`Debian` or `Raspbian`, C10, release `trixie`), `command -v raspi-config`, `get_pi_type` with the -1 / unknown / rc≠0 messages, Pi_Model fact, board type from `/proc/cpuinfo`, user resolution through `getent` (UID 1000 fallback) with `raspi_config__user_env` and `raspi_config__user_home`, and `package_facts`
     - Every `command` task is read-only with `changed_when: false` and `check_mode: false`
     - _Requirements: 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 6.5_
 
-  - [~] 3.2 Write property test for preflight classification
+  - [-] 3.2 Write property test for preflight classification
     - `tests/unit/test_p01_preflight.py`
     - **Property 1: Preflight classification**
     - **Validates: Requirements 1.3, 1.6, 1.7, 6.5**
@@ -71,12 +71,12 @@ Every Option uses the pattern from the design: a `block` carrying the base tag `
     - _Requirements: 1.8, 1.9, 6.5_
 
 - [ ] 4. Phase 1: Implement input validation
-  - [~] 4.1 Add the validation predicates to `vars/main.yml`
+  - [x] 4.1 Add the validation predicates to `vars/main.yml`
     - Lazily evaluated `raspi_config__valid_*` expressions for: renamed variables, removed `boot_behavior` values, booleans (`is boolean`, no coercion), enumerations, fan ranges, overclock per Pi_Model, hostname, SSID byte length (urlencode expression), passphrase length, SSID-requires-country, composite/4Kp60 exclusivity (C12), underscan list, proxy values, onscreen keyboard output name, and the reference-file predicates (iso3166.tab, SUPPORTED, base.lst, time zone path without `..`)
     - Do not add the serial console/hardware rule (C4)
     - _Requirements: 4.8, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 9.3, 9.10, 9.11, 10.1, 10.6, 12.1, 14.6, 15.6, 16.9_
 
-  - [~] 4.2 Create `tasks/validate.yml`
+  - [-] 4.2 Create `tasks/validate.yml`
     - `ansible.builtin.assert` tasks with `quiet: true` and explicit `fail_msg`, ordered as in the design (renamed variables and removed values before the generic enum checks)
     - Host-side reads only when the matching variable is not `""`: `slurp` of `iso3166.tab`, `SUPPORTED`, and `base.lst`; `stat` of `/usr/share/zoneinfo/<value>`; `find` of `/sys/class/drm/card*-<value>`; missing or unreadable file fails with the file path and variable name
     - User existence check against the passwd table from preflight
@@ -114,7 +114,7 @@ Every Option uses the pattern from the design: a `block` carrying the base tag `
     - **Validates: Requirements 5.7**
 
 - [ ] 5. Phase 1: Implement deprecation warnings
-  - [~] 5.1 Create `tasks/deprecations.yml`
+  - [x] 5.1 Create `tasks/deprecations.yml`
     - One `ansible.builtin.debug` task looping over `raspi_config__deprecated_variables`, detecting each name with `lookup('ansible.builtin.vars', item.name, default='__raspi_config_undefined__')` and printing the `[DEPRECATED]` message; undefined items are skipped and no value is read
     - _Requirements: 8.4, 8.6, 8.7_
 
@@ -124,16 +124,16 @@ Every Option uses the pattern from the design: a `block` carrying the base tag `
     - **Validates: Requirements 8.4, 8.6, 8.7**
 
 - [ ] 6. Phase 1: Implement the reboot handler chain and first-boot prompt removal
-  - [~] 6.1 Rewrite `handlers/main.yml`
+  - [x] 6.1 Rewrite `handlers/main.yml`
     - Remove the debug placeholder and the `Restart wpa_supplicant` handler
     - Add the `Reboot` handler (`ansible.builtin.reboot`, `reboot_timeout: 600`, `failed_when: false`, only when `raspi_config_allow_reboot` and not check mode), the timeout failure handler, and the pending-reboot message handler (`would need` / `needs`), all listening to `Reboot`, plus `Reload systemd`
     - _Requirements: 2.10, 7.2, 7.3, 7.5, 7.6, 7.7_
 
-  - [~] 6.2 Create `tasks/first_boot.yml`
+  - [x] 6.2 Create `tasks/first_boot.yml`
     - Two `ansible.builtin.file: state: absent` tasks for `/etc/profile.d/raspi-config.sh` and `/etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf`; only the second notifies `Reload systemd`
     - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
 
-  - [~] 6.3 Write property test for the reboot handler decision
+  - [-] 6.3 Write property test for the reboot handler decision
     - `tests/unit/test_p14_reboot_handler.py`
     - **Property 14: Reboot handler decision**
     - **Validates: Requirements 2.10, 7.2, 7.3, 7.6, 7.7**
@@ -143,17 +143,17 @@ Every Option uses the pattern from the design: a `block` carrying the base tag `
     - _Requirements: 18.1, 18.2, 18.3_
 
 - [ ] 7. Phase 1: Rewire `tasks/main.yml`, remove obsolete Options, and add the reference Option
-  - [~] 7.1 Rewrite `tasks/main.yml`
+  - [-] 7.1 Rewrite `tasks/main.yml`
     - Orchestration only: `import_tasks` of `preflight.yml`, `validate.yml`, and `deprecations.yml` (tag `always`), the six Submenu_Files (tags `raspi_config` and `raspi_config:SUBMENU`), and `first_boot.yml` (tag `always`)
     - Remove the inline `get_pi_type` and first-boot tasks
     - _Requirements: 1.9, 3.4, 3.5, 3.6, 3.7_
 
-  - [~] 7.2 Remove obsolete Options, placeholder tasks, and stale comments from the six Submenu_Files
+  - [x] 7.2 Remove obsolete Options, placeholder tasks, and stale comments from the six Submenu_Files
     - `interface.yml`: Legacy Camera, Remote GPIO; `display.yml`: Pixel Doubling, Resolution and Underscan placeholders; `performance.yml`: GPU memory split; `system.yml`: Network at Boot, Audio placeholder; `advanced.yml`: xcompmgr, Glamor, and the commented-out GL driver, proxy, boot ROM, and network-config blocks; `localization.yml`: keyboard placeholder
     - Remove every `fail` + `ignore_errors: true` task and every `TODO` or commented-out block for in-scope Options
     - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
-  - [~] 7.3 Implement I1 SSH as the reference check-then-change Option in `tasks/interface.yml`
+  - [-] 7.3 Implement I1 SSH as the reference check-then-change Option in `tasks/interface.yml`
     - Follow the design's I1 example: block with base tag, Check_Task with `failed_when` on rc and output map, enable/disable Change_Tasks with `raspi_config__noop_argv` in check mode and `when` driven by `raspi_config__options.ssh.true_output`, Verify_Task, rescue
     - Write the `when` and `failed_when` expressions so the harness from 1.2 can render them; later Options copy this shape
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.6, 2.7, 2.8, 2.9, 3.1, 3.2, 3.3, 13.1_

@@ -1,11 +1,38 @@
 ---
+# Handlers run in file order. The three handlers below all respond to the
+# `Reboot` notification, so one notification from any Change_Task runs each of
+# them once per host after all tasks of the play.
 
 - name: Reboot
-  # reboot:  #comment out for now for faster testing
-  ansible.builtin.debug:
-    msg: "Reboot would have happened now"
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+    msg: "Reboot initiated by tkeemon.raspi_config"
+  register: raspi_config__reboot_result
+  failed_when: false
+  when:
+    - raspi_config_allow_reboot | bool
+    - not ansible_check_mode
 
-- name: Restart wpa_supplicant
-  ansible.builtin.service:
-    name: wpa_supplicant
-    state: restarted
+# `failed_when: false` on the Reboot handler resets the `failed` key of the
+# registered result, so `is failed` is always false. A reboot that succeeds
+# returns no `msg`, a reboot that times out returns one.
+- name: Fail when the host did not come back after the reboot
+  ansible.builtin.fail:
+    msg: "{{ inventory_hostname }} did not come back within 600 seconds after the reboot."
+  when:
+    - raspi_config__reboot_result is defined
+    - raspi_config__reboot_result is not skipped
+    - raspi_config__reboot_result.msg is defined
+  listen: Reboot
+
+- name: Report pending reboot
+  ansible.builtin.debug:
+    msg: >-
+      {{ inventory_hostname }} {{ 'would need' if ansible_check_mode else 'needs' }} a reboot
+      for the changes to take effect. Set raspi_config_allow_reboot: true to reboot automatically.
+  when: ansible_check_mode or not (raspi_config_allow_reboot | bool)
+  listen: Reboot
+
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true

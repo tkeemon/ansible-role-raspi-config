@@ -1,0 +1,164 @@
+---
+# Preflight checks. Imported from tasks/main.yml with the `always` tag, so they
+# run under any --tags or --skip-tags selection (except --skip-tags always) and
+# in check mode. Every task is read-only. `command` tasks set
+# `check_mode: false` so they execute in check mode, and `changed_when: false`
+# so they report `ok`.
+#
+# The checks run in this order and stop at the first failure on a host:
+# release, raspi-config presence, Pi_Model. Ansible continues the play on the
+# other hosts.
+#
+# Facts set here:
+#   raspi_config__pi_model    int, 0 to 5
+#   raspi_config__board_type  int, board type code from the /proc/cpuinfo
+#                             revision, or -1 for old-style revision codes
+#   raspi_config__user        name of the account the role configures, or ""
+#   raspi_config__user_env    SUDO_USER and SUDO_UID for per-user raspi-config
+#                             functions
+#   raspi_config__user_home   home directory of that account, or ""
+
+# 1. Minimal facts, also for plays that set `gather_facts: false`.
+- name: Gather minimal facts when they are missing
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - min
+  when: >-
+    ansible_facts.distribution is not defined or
+    ansible_facts.distribution_release is not defined
+
+# 2. Release. `Raspbian` is accepted for fact sources that report the raw ID of
+# the 32-bit image (design clarification C10).
+- name: Assert that the Target_Host runs Debian trixie
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.distribution | default('') in ['Debian', 'Raspbian']
+      - ansible_facts.distribution_release | default('') == 'trixie'
+    quiet: true
+    fail_msg: >-
+      Unsupported platform on {{ inventory_hostname }}: detected distribution
+      '{{ ansible_facts.distribution | default('unknown') }}', detected release
+      '{{ ansible_facts.distribution_release | default('unknown') }}'. The role
+      supports the Debian release 'trixie' only.
+
+# 3. raspi-config in the command search path of the privileged user.
+- name: Find the raspi-config command
+  ansible.builtin.command:
+    argv:
+      - sh
+      - -c
+      - command -v raspi-config
+  register: raspi_config__command_path
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Assert that the raspi-config command exists
+  ansible.builtin.assert:
+    that:
+      - raspi_config__command_path.rc == 0
+    quiet: true
+    fail_msg: >-
+      The raspi-config command was not found in the command search path on
+      {{ inventory_hostname }}. Install the raspi-config package.
+
+# 4. Pi_Model.
+- name: Read the Pi_Model
+  ansible.builtin.command:
+    argv:
+      - raspi-config
+      - nonint
+      - get_pi_type
+  register: raspi_config__pi_type
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Assert that the Target_Host is a Raspberry Pi
+  ansible.builtin.assert:
+    that:
+      - not (raspi_config__pi_type.rc == 0 and (raspi_config__pi_type.stdout | trim) == '-1')
+    quiet: true
+    fail_msg: >-
+      {{ inventory_hostname }} is not a Raspberry Pi: raspi-config nonint
+      get_pi_type returned -1.
+
+- name: Assert that the Pi_Model is known
+  ansible.builtin.assert:
+    that:
+      - raspi_config__pi_type.rc == 0
+      - (raspi_config__pi_type.stdout | trim) in ['0', '1', '2', '3', '4', '5']
+    quiet: true
+    fail_msg: >-
+      raspi-config nonint get_pi_type on {{ inventory_hostname }} returned an
+      unexpected result: output '{{ raspi_config__pi_type.stdout | default('') | trim }}',
+      error output '{{ raspi_config__pi_type.stderr | default('') | trim }}',
+      exit status {{ raspi_config__pi_type.rc | default('unknown') }}. Expected
+      exit status 0 and one of 0, 1, 2, 3, 4, 5.
+
+# 5. Pi_Model fact. A rendered `{{ expression | int }}` is a string in
+# ansible-core 2.18, which would never match the integer lists in
+# raspi_config__option_models. A one-item list is parsed into real integers, and
+# `"{{ item }}"` then keeps the integer type.
+- name: Set the Pi_Model fact
+  ansible.builtin.set_fact:
+    raspi_config__pi_model: "{{ item }}"
+  loop: "{{ [(raspi_config__pi_type.stdout | trim) | int] }}"
+
+# 6. Board type. A new-style revision code has bit 23 set, and bits 4 to 11
+# hold the board type (0x13 Pi 400, 0x17 Pi 5, 0x18 CM5, 0x19 Pi 500).
+- name: Read /proc/cpuinfo
+  ansible.builtin.slurp:
+    src: /proc/cpuinfo
+  register: raspi_config__cpuinfo
+
+# The one-item loop keeps the fact an integer (see the Pi_Model fact above).
+- name: Set the board type fact
+  ansible.builtin.set_fact:
+    raspi_config__board_type: "{{ item }}"
+  loop: >-
+    {{ [(((raspi_config__revision | int(base=16)) // 16) % 256)
+    if (raspi_config__revision | length > 0
+    and ((raspi_config__revision | int(base=16)) // 8388608) % 2 == 1)
+    else -1] }}
+  vars:
+    raspi_config__revision: >-
+      {{ (raspi_config__cpuinfo.content | b64decode)
+      | regex_findall('(?m)^Revision\s*:\s*([0-9a-fA-F]+)')
+      | last | default('') }}
+
+# 7. User. The account is `raspi_config_user`. When that is "", the role uses
+# the account with UID 1000, as the Upstream_Script does. A missing account
+# leaves the facts empty, and validate.yml reports it.
+- name: Read the passwd table
+  ansible.builtin.getent:
+    database: passwd
+
+- name: Set the user facts
+  ansible.builtin.set_fact:
+    raspi_config__user: "{{ raspi_config__user_name }}"
+    raspi_config__user_env:
+      SUDO_USER: "{{ raspi_config__user_name }}"
+      SUDO_UID: "{{ raspi_config__user_uid | string }}"
+    raspi_config__user_home: "{{ raspi_config__user_home_dir }}"
+  vars:
+    raspi_config__uid_1000_names: >-
+      {{ ansible_facts.getent_passwd | dict2items
+      | selectattr('value.1', 'equalto', '1000')
+      | map(attribute='key') | sort | list }}
+    raspi_config__user_name: >-
+      {{ raspi_config_user if (raspi_config_user | default('')) != ''
+      else (raspi_config__uid_1000_names | first | default('')) }}
+    raspi_config__user_uid: >-
+      {{ ansible_facts.getent_passwd[raspi_config__user_name][1]
+      if raspi_config__user_name in ansible_facts.getent_passwd else '' }}
+    raspi_config__user_home_dir: >-
+      {{ ansible_facts.getent_passwd[raspi_config__user_name][4]
+      if raspi_config__user_name in ansible_facts.getent_passwd else '' }}
+
+# 8. Package facts, used for lightdm, rpi-connect, rpi-connect-lite, and
+# squeekboard.
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: apt

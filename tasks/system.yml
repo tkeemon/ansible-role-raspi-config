@@ -18,13 +18,6 @@
   tags:
   - raspi_config:system:wifi
 
-# "S2 Audio" "Select audio out through HDMI or 3.5mm jack" \
-# TODO: test on an rPi with a headphone jack
-- name: Need to implement Audio option
-  ansible.builtin.fail:
-    msg: "TODO: implement audio options"
-  ignore_errors: true
-
 # "S3 Password" "Change password for the '$USER' user" \
 - name: Change user's password
   ansible.builtin.user:
@@ -65,32 +58,6 @@
   notify: Reboot
   tags:
   - raspi_config:system:boot_behavior
-
-# "S6 Network at Boot" "Select wait for network connection on boot" \
-- name: Get current network at boot status
-  ansible.builtin.command: raspi-config nonint get_boot_wait
-  register: boot_wait
-  changed_when: false
-  tags:
-  - raspi_config:system:network_at_boot
-  - raspi_config:system:network_at_boot:enable
-  - raspi_config:system:network_at_boot:disable
-
-- name: Enable waiting for a network connection before booting system
-  ansible.builtin.command: raspi-config nonint do_boot_wait 0
-  changed_when: boot_wait.stdout|int == 1
-  when: raspi_config_wait_on_network
-  tags:
-  - raspi_config:system:network_at_boot
-  - raspi_config:system:network_at_boot:enable
-
-- name: Disable waiting for a network connection before booting system
-  ansible.builtin.command: raspi-config nonint do_boot_wait 1
-  changed_when: boot_wait.stdout|int == 0
-  when: not raspi_config_wait_on_network
-  tags:
-  - raspi_config:system:network_at_boot
-  - raspi_config:system:network_at_boot:disable
 
 # "S7 Splash Screen" "Choose graphical splash screen or text boot" \
 - name: Make sure splash screen is installed

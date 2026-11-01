@@ -1,0 +1,15 @@
+---
+# Removes the first-boot raspi-config prompt. Only the two files are deleted;
+# the getty@tty1.service.d directory and any other file in it stay in place.
+# Both tasks support check mode natively and report the path on failure.
+
+- name: Remove the raspi-config login shell hook
+  ansible.builtin.file:
+    path: /etc/profile.d/raspi-config.sh
+    state: absent
+
+- name: Remove the raspi-config getty override
+  ansible.builtin.file:
+    path: /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf
+    state: absent
+  notify: Reload systemd

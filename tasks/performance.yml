@@ -7,14 +7,6 @@
   tags: 
   - raspi_config:performance:overclock
 
-# "P2 GPU Memory" "Change the amount of memory made available to the GPU" \
-# TODO: do some safety checking of the memory split before changing the config
-- name: Set GPU/CPU memory split 
-  ansible.builtin.command: raspi-config nonint do_memory_split {{ raspi_config_gpu_memory }}
-  notify: Reboot  # TODO: see if 'changed' accurately indicates that we need to reboot
-  tags:
-  - raspi_config:performance:gpu_memory
-
 # "P3 Overlay File System" "Enable/disable read-only file system" \
 - name: Get current Overlay File System status
   ansible.builtin.command: raspi-config nonint get_overlay_conf

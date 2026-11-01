@@ -1,42 +1,41 @@
 ---
 
-- name: Get Raspberry Pi Model
-  ansible.builtin.command: raspi-config nonint get_pi_type
-  register: rpi_model
-  changed_when: false
-  tags:
-  - always
+- name: Run preflight checks
+  ansible.builtin.import_tasks: preflight.yml
+  tags: [always]
+
+- name: Validate role variables
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always]
+
+- name: Warn about deprecated variables
+  ansible.builtin.import_tasks: deprecations.yml
+  tags: [always]
 
 - name: Run System tasks
   ansible.builtin.import_tasks: system.yml
-  tags: ['raspi_config', 'raspi_config:system']
+  tags: [raspi_config, "raspi_config:system"]
 
 - name: Run Display tasks
   ansible.builtin.import_tasks: display.yml
-  tags: ['raspi_config', 'raspi_config:display']
+  tags: [raspi_config, "raspi_config:display"]
 
 - name: Run Interface tasks
   ansible.builtin.import_tasks: interface.yml
-  tags: ['raspi_config', 'raspi_config:interface']
+  tags: [raspi_config, "raspi_config:interface"]
 
 - name: Run Performance tasks
   ansible.builtin.import_tasks: performance.yml
-  tags: ['raspi_config', 'raspi_config:performance']
+  tags: [raspi_config, "raspi_config:performance"]
 
 - name: Run Localization tasks
   ansible.builtin.import_tasks: localization.yml
-  tags: ['raspi_config', 'raspi_config:localization']
+  tags: [raspi_config, "raspi_config:localization"]
 
 - name: Run Advanced tasks
   ansible.builtin.import_tasks: advanced.yml
-  tags: ['raspi_config', 'raspi_config:advanced']
+  tags: [raspi_config, "raspi_config:advanced"]
 
-- name: Disable raspi-config at boot
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - /etc/profile.d/raspi-config.sh
-    - /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf
-  tags: 
-  - always
+- name: Disable raspi-config at first boot
+  ansible.builtin.import_tasks: first_boot.yml
+  tags: [always]

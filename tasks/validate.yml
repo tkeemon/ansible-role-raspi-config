@@ -1,0 +1,378 @@
+---
+# Validation_Tasks (Requirements 5.1 to 5.9). Imported from tasks/main.yml with
+# the `always` tag, so they run under any --tags selection, in check mode, and
+# on Target_Hosts where a Model_Gate excludes an Option. Every task is
+# read-only. A failed assertion fails the host before any Change_Task runs.
+#
+# The rules live in vars/main.yml as raspi_config__valid_* predicates. Each
+# task here evaluates one predicate with `| bool` (a predicate renders to
+# "True" or "False") and carries an explicit fail_msg.
+#
+# Order: renamed variables and removed values come first so the user sees the
+# specific message before the generic enumeration message. Host-side reads run
+# only when the matching Role_Variable is not the Unmanaged_Value ("").
+#
+# Secrets: raspi_config_wifi_password and the proxy variables may hold secrets.
+# A task with no_log: true replaces its whole result, including fail_msg, with
+# a "hidden" notice. So the predicate is evaluated in a no_log set_fact task
+# that stores only a boolean, and a separate assert task, which never touches
+# the value, reports the failure with the variable name and the rule.
+
+# 1. Renamed variables (5.7). Any definition fails, whatever the value.
+- name: Assert that no renamed variable is defined
+  ansible.builtin.assert:
+    that:
+      - item.value | bool
+    quiet: true
+    fail_msg: >-
+      {{ item.key }} was removed in this release. Use
+      {{ (raspi_config__renamed_variables | selectattr('name', 'equalto', item.key)
+      | first).replacements | join(' and ') }} instead.
+  loop: "{{ raspi_config__valid_renamed | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# 2. Removed values of raspi_config_boot_behavior (10.6).
+- name: Assert that raspi_config_boot_behavior holds no removed value
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_boot_behavior_not_removed | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_boot_behavior '{{ raspi_config_boot_behavior }}' is no longer
+      accepted. Set raspi_config_boot_behavior to 'console' or 'desktop', and
+      use raspi_config_enable_console_autologin or
+      raspi_config_enable_desktop_autologin for auto login.
+
+# 3. Booleans (5.8, 10.1). The `boolean` test does no coercion.
+- name: Assert that boolean Role_Variables hold booleans
+  ansible.builtin.assert:
+    that:
+      - item.value | bool
+    quiet: true
+    fail_msg: >-
+      {{ item.key }} must be a boolean, true or false. Given value:
+      {{ lookup('ansible.builtin.vars', item.key, default='undefined') | to_json }}.
+  loop: "{{ raspi_config__valid_boolean | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# 4. Enumerations (4.8, 5.1, 5.2, 10.1).
+- name: Assert that enumerated Role_Variables hold accepted values
+  ansible.builtin.assert:
+    that:
+      - item.value | bool
+    quiet: true
+    fail_msg: >-
+      {{ item.key }} has the unaccepted value
+      {{ lookup('ansible.builtin.vars', item.key, default='undefined') | to_json }}.
+      Accepted values (case-sensitive): {{ raspi_config__enums[item.key] | to_json }}.
+  loop: "{{ raspi_config__valid_enum | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# 5. Ranges (5.3).
+- name: Assert that ranged Role_Variables are integers within range
+  ansible.builtin.assert:
+    that:
+      - item.value | bool
+    quiet: true
+    fail_msg: >-
+      {{ item.key }} must be an integer from
+      {{ raspi_config__ranges[item.key].low }} to
+      {{ raspi_config__ranges[item.key].high }}. Given value:
+      {{ lookup('ansible.builtin.vars', item.key, default='undefined') | to_json }}.
+  loop: "{{ raspi_config__valid_range | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# 6. Overclock profile per Pi_Model (14.6).
+- name: Assert that the overclock profile fits the Pi_Model
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_overclock | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_overclock_settings has the unaccepted value
+      {{ raspi_config_overclock_settings | to_json }} for Pi_Model
+      {{ raspi_config__pi_model | default('unknown') }}. Accepted values:
+      {{ raspi_config__overclock_accepted | to_json }}.
+
+# 7. Hostname (9.11).
+- name: Assert that raspi_config_hostname is a valid hostname
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_hostname | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_hostname has the invalid value
+      {{ raspi_config_hostname | to_json }}. A hostname has 1 to 63 characters,
+      uses only ASCII letters, digits, and hyphens, and neither starts nor ends
+      with a hyphen.
+
+# 8. Wireless LAN (9.2, 9.3, 9.10).
+- name: Assert that raspi_config_wifi_ssid is at most 32 bytes
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_wifi_ssid | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_wifi_ssid must be at most 32 bytes in UTF-8. The given
+      value has {{ raspi_config__wifi_ssid_byte_length }} bytes.
+
+- name: Check the length of raspi_config_wifi_password
+  ansible.builtin.set_fact:
+    raspi_config__checked_wifi_password: "{{ raspi_config__valid_wifi_password | bool }}"
+  no_log: true
+
+- name: Assert that raspi_config_wifi_password has 8 to 63 characters
+  ansible.builtin.assert:
+    that:
+      - raspi_config__checked_wifi_password | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_wifi_password must have 8 to 63 characters, or be empty to
+      leave Wireless LAN unmanaged. The value is not shown.
+
+- name: Assert that a WLAN country is set when raspi_config_wifi_ssid is set
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_wifi_country_for_ssid | bool
+    quiet: true
+    fail_msg: >-
+      A WLAN country is required for Wireless LAN. Set raspi_config_wifi_country
+      when raspi_config_wifi_ssid is set.
+
+# 9. Display exclusivity (C12).
+- name: Assert that composite video and 4Kp60 HDMI are not both enabled
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_display_exclusive | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_enable_composite_video and raspi_config_enable_hdmi_4kp60
+      cannot both be true, because enabling one disables the other. Set at
+      least one of them to false.
+
+# 10. Underscan outputs (12.1).
+- name: Assert that raspi_config_underscan_outputs is a valid output list
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_underscan_outputs | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_underscan_outputs must be a list of at most two unique
+      entries from {{ raspi_config__underscan_allowed_outputs | to_json }}.
+      Given value: {{ raspi_config_underscan_outputs | to_json }}.
+
+# 11. Proxies (16.9). The messages name the variable and never print its value.
+- name: Check the proxy Role_Variables
+  ansible.builtin.set_fact:
+    raspi_config__checked_proxy: "{{ raspi_config__valid_proxy }}"
+  no_log: true
+
+- name: Assert that proxy Role_Variables hold no whitespace and fit the length limit
+  ansible.builtin.assert:
+    that:
+      - item.value | bool
+    quiet: true
+    fail_msg: >-
+      {{ item.key }} must contain no whitespace character and have at most
+      {{ raspi_config__proxy_max_length }} characters, or be empty to leave the
+      scheme unmanaged. The value is not shown.
+  loop: "{{ raspi_config__checked_proxy | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# 12. Onscreen keyboard output (12.7). The name syntax is checked first, so the
+# DRM connector search never receives glob characters.
+- name: Assert that raspi_config_onscreen_keyboard_output is a valid output name
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_onscreen_keyboard_output_name | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_onscreen_keyboard_output has the invalid value
+      {{ raspi_config_onscreen_keyboard_output | to_json }}. An output name uses
+      only ASCII letters, digits, dots, underscores, and hyphens (for example
+      HDMI-A-1).
+
+- name: Find the DRM connector for raspi_config_onscreen_keyboard_output
+  ansible.builtin.find:
+    paths: /sys/class/drm
+    patterns: "card*-{{ raspi_config_onscreen_keyboard_output }}"
+    file_type: any
+    use_regex: false
+    recurse: false
+  register: raspi_config__find_drm_connector
+  failed_when: false
+  check_mode: false
+  when: raspi_config_onscreen_keyboard_output != ''
+
+- name: Assert that the DRM connector exists
+  ansible.builtin.assert:
+    that:
+      - raspi_config__find_drm_connector.matched | default(0) | int > 0
+    quiet: true
+    fail_msg: >-
+      raspi_config_onscreen_keyboard_output {{ raspi_config_onscreen_keyboard_output | to_json }}
+      matches no display connector: /sys/class/drm/card*-{{ raspi_config_onscreen_keyboard_output }}
+      does not exist on {{ inventory_hostname }}.
+  when: raspi_config_onscreen_keyboard_output != ''
+
+# 13. User (9.12, 11.7). raspi_config__user and the passwd table come from
+# preflight.yml.
+- name: Assert that the configured user exists
+  ansible.builtin.assert:
+    that:
+      - raspi_config__user | default('') != ''
+      - raspi_config__user in (ansible_facts.getent_passwd | default({}))
+    quiet: true
+    fail_msg: >-
+      {% if raspi_config_user | default('') == '' -%}
+      raspi_config_user is empty and no account with UID 1000 exists on
+      {{ inventory_hostname }}. Set raspi_config_user to an existing account.
+      {%- else -%}
+      raspi_config_user {{ raspi_config_user | to_json }} does not name an
+      existing account on {{ inventory_hostname }}.
+      {%- endif %}
+
+# 14. WLAN country (5.4, 5.9).
+- name: Read the WLAN country list
+  ansible.builtin.slurp:
+    src: /usr/share/zoneinfo/iso3166.tab
+  register: raspi_config__slurp_iso3166
+  failed_when: false
+  check_mode: false
+  when: raspi_config_wifi_country != ''
+
+- name: Assert that the WLAN country list could be read
+  ansible.builtin.assert:
+    that:
+      - raspi_config__slurp_iso3166.content is defined
+    quiet: true
+    fail_msg: >-
+      /usr/share/zoneinfo/iso3166.tab is absent or unreadable on
+      {{ inventory_hostname }}. raspi_config_wifi_country needs it to validate
+      its value.
+  when: raspi_config_wifi_country != ''
+
+- name: Decode the WLAN country list
+  ansible.builtin.set_fact:
+    raspi_config__iso3166_tab: "{{ raspi_config__slurp_iso3166.content | b64decode }}"
+  when: raspi_config_wifi_country != ''
+
+- name: Assert that raspi_config_wifi_country is a listed country code
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_wifi_country | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_wifi_country has the unaccepted value
+      {{ raspi_config_wifi_country | to_json }}. It must be a two-letter
+      uppercase country code from /usr/share/zoneinfo/iso3166.tab.
+
+# 15. Time zone (5.5, 5.9). The path check comes first, so the stat never
+# follows a `..` component.
+- name: Assert that raspi_config_time_zone has no parent directory component
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_time_zone_path | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_time_zone has the unaccepted value
+      {{ raspi_config_time_zone | to_json }}. It must not contain a '..' path
+      component.
+
+- name: Check the time zone file
+  ansible.builtin.stat:
+    path: "/usr/share/zoneinfo/{{ raspi_config_time_zone }}"
+    follow: true
+    get_checksum: false
+    get_mime: false
+    get_attributes: false
+  register: raspi_config__stat_time_zone
+  failed_when: false
+  check_mode: false
+  when: raspi_config_time_zone != ''
+
+- name: Assert that raspi_config_time_zone names a time zone file
+  ansible.builtin.assert:
+    that:
+      - (raspi_config__stat_time_zone.stat | default({})).isreg | default(false)
+    quiet: true
+    fail_msg: >-
+      raspi_config_time_zone has the unaccepted value
+      {{ raspi_config_time_zone | to_json }}. /usr/share/zoneinfo/{{ raspi_config_time_zone }}
+      is not a regular file (or a symbolic link to one) on {{ inventory_hostname }}.
+  when: raspi_config_time_zone != ''
+
+# 16. Locale (5.6, 5.9).
+- name: Read the supported locales
+  ansible.builtin.slurp:
+    src: /usr/share/i18n/SUPPORTED
+  register: raspi_config__slurp_supported
+  failed_when: false
+  check_mode: false
+  when: raspi_config_locale != ''
+
+- name: Assert that the supported locales could be read
+  ansible.builtin.assert:
+    that:
+      - raspi_config__slurp_supported.content is defined
+    quiet: true
+    fail_msg: >-
+      /usr/share/i18n/SUPPORTED is absent or unreadable on
+      {{ inventory_hostname }}. raspi_config_locale needs it to validate its
+      value.
+  when: raspi_config_locale != ''
+
+- name: Decode the supported locales
+  ansible.builtin.set_fact:
+    raspi_config__supported_locales: "{{ raspi_config__slurp_supported.content | b64decode }}"
+  when: raspi_config_locale != ''
+
+- name: Assert that raspi_config_locale is a supported locale
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_locale | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_locale has the unaccepted value
+      {{ raspi_config_locale | to_json }}. It must match the first field of a
+      line in /usr/share/i18n/SUPPORTED.
+
+# 17. Keyboard layout (15.6, 5.9).
+- name: Read the XKB layout list
+  ansible.builtin.slurp:
+    src: /usr/share/X11/xkb/rules/base.lst
+  register: raspi_config__slurp_base_lst
+  failed_when: false
+  check_mode: false
+  when: raspi_config_keyboard_layout != ''
+
+- name: Assert that the XKB layout list could be read
+  ansible.builtin.assert:
+    that:
+      - raspi_config__slurp_base_lst.content is defined
+    quiet: true
+    fail_msg: >-
+      /usr/share/X11/xkb/rules/base.lst is absent or unreadable on
+      {{ inventory_hostname }}. raspi_config_keyboard_layout needs it to
+      validate its value.
+  when: raspi_config_keyboard_layout != ''
+
+- name: Decode the XKB layout list
+  ansible.builtin.set_fact:
+    raspi_config__xkb_base_lst: "{{ raspi_config__slurp_base_lst.content | b64decode }}"
+  when: raspi_config_keyboard_layout != ''
+
+- name: Assert that raspi_config_keyboard_layout is an installed layout
+  ansible.builtin.assert:
+    that:
+      - raspi_config__valid_keyboard_layout | bool
+    quiet: true
+    fail_msg: >-
+      raspi_config_keyboard_layout has the unaccepted value
+      {{ raspi_config_keyboard_layout | to_json }}. It must be a layout code
+      from the layout section of /usr/share/X11/xkb/rules/base.lst.

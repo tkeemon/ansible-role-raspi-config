@@ -1,0 +1,16 @@
+---
+# Warn about Deprecated_Variables (Requirements 8.4, 8.6, 8.7).
+# The lookup detects a variable from any source (inventory, play vars, role
+# parameters, extra vars). Only the name is tested. No value is read, printed,
+# or passed to any other task, so a defined variable never changes the host.
+- name: Warn about deprecated variables
+  ansible.builtin.debug:
+    msg: >-
+      [DEPRECATED] {{ item.name }} controlled {{ item.option }}, which the
+      trixie raspi-config no longer offers. The role ignores it.
+  when: >-
+    lookup('ansible.builtin.vars', item.name, default='__raspi_config_undefined__')
+    != '__raspi_config_undefined__'
+  loop: "{{ raspi_config__deprecated_variables }}"
+  loop_control:
+    label: "{{ item.name }}"
