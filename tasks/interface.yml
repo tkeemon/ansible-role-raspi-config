@@ -85,82 +85,247 @@
         - "raspi_config:interface:ssh:disable"
 
 # "I3 VNC" "Enable/disable graphical remote access using RealVNC" \
-- name: Get current VNC status
-  ansible.builtin.command: raspi-config nonint get_vnc
-  changed_when: false
-  register: vnc_status
+- name: I3 VNC
   tags:
-  - raspi_config:interface:vnc
-  - raspi_config:interface:vnc:enable
-  - raspi_config:interface:vnc:disable
+    - "raspi_config:interface:vnc"
+  block:
+    - name: Read VNC state (I3)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_vnc
+      register: raspi_config__check_vnc
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_vnc.rc != 0 or
+        (raspi_config__check_vnc.stdout | trim) not in ['0', '1']
+      tags:
+        - "raspi_config:interface:vnc:enable"
+        - "raspi_config:interface:vnc:disable"
 
-- name: Enable VNC support
-  ansible.builtin.command: raspi-config nonint do_vnc 0
-  changed_when: vnc_status.stdout|int == 1
-  when: raspi_config_enable_vnc
-  tags:
-  - raspi_config:interface:vnc
-  - raspi_config:interface:vnc:enable
+    - name: Enable VNC (I3)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_vnc', '0'] }}
+      register: raspi_config__change_vnc_enable
+      changed_when: true
+      check_mode: false
+      when:
+        - raspi_config_enable_vnc
+        - (raspi_config__check_vnc.stdout | trim) != raspi_config__options.vnc.true_output
+      tags:
+        - "raspi_config:interface:vnc:enable"
 
-- name: Disable VNC support
-  ansible.builtin.command: raspi-config nonint do_vnc 1
-  changed_when: vnc_status.stdout|int == 0
-  when: not raspi_config_enable_vnc
-  tags:
-  - raspi_config:interface:vnc
-  - raspi_config:interface:vnc:disable
+    - name: Disable VNC (I3)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_vnc', '1'] }}
+      register: raspi_config__change_vnc_disable
+      changed_when: true
+      check_mode: false
+      when:
+        - not raspi_config_enable_vnc
+        - (raspi_config__check_vnc.stdout | trim) == raspi_config__options.vnc.true_output
+      tags:
+        - "raspi_config:interface:vnc:disable"
+
+    - name: Verify VNC state (I3)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_vnc
+      register: raspi_config__verify_vnc
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_vnc_enable is changed or raspi_config__change_vnc_disable is changed
+      failed_when: >-
+        raspi_config__verify_vnc.rc != 0 or
+        (raspi_config__verify_vnc.stdout | trim) not in ['0', '1'] or
+        ((raspi_config__verify_vnc.stdout | trim) == raspi_config__options.vnc.true_output)
+        != (raspi_config_enable_vnc | bool)
+      tags:
+        - "raspi_config:interface:vnc:enable"
+        - "raspi_config:interface:vnc:disable"
+  rescue:
+    - name: Report VNC failure (I3)
+      ansible.builtin.fail:
+        msg: >-
+          Option I3 VNC failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
+      tags:
+        - "raspi_config:interface:vnc:enable"
+        - "raspi_config:interface:vnc:disable"
 
 # "I4 SPI" "Enable/disable automatic loading of SPI kernel module" \
-- name: Get current SPI status
-  ansible.builtin.command: raspi-config nonint get_spi
-  changed_when: false
-  register: spi_status
+- name: I4 SPI
   tags:
-  - raspi_config:interface:spi
-  - raspi_config:interface:spi:enable
-  - raspi_config:interface:spi:disable
+    - "raspi_config:interface:spi"
+  block:
+    - name: Read SPI state (I4)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_spi
+      register: raspi_config__check_spi
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_spi.rc != 0 or
+        (raspi_config__check_spi.stdout | trim) not in ['0', '1']
+      tags:
+        - "raspi_config:interface:spi:enable"
+        - "raspi_config:interface:spi:disable"
 
-- name: Enable SPI support
-  ansible.builtin.command: raspi-config nonint do_spi 0
-  changed_when: spi_status.stdout|int == 1
-  when: raspi_config_enable_spi
-  tags:
-  - raspi_config:interface:spi
-  - raspi_config:interface:spi:enable
+    - name: Enable SPI (I4)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_spi', '0'] }}
+      register: raspi_config__change_spi_enable
+      changed_when: true
+      check_mode: false
+      when:
+        - raspi_config_enable_spi
+        - (raspi_config__check_spi.stdout | trim) != raspi_config__options.spi.true_output
+      tags:
+        - "raspi_config:interface:spi:enable"
 
-- name: Disable SPI support
-  ansible.builtin.command: raspi-config nonint do_spi 1
-  changed_when: spi_status.stdout|int == 0
-  when: not raspi_config_enable_spi
-  tags:
-  - raspi_config:interface:spi
-  - raspi_config:interface:spi:disable
+    - name: Disable SPI (I4)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_spi', '1'] }}
+      register: raspi_config__change_spi_disable
+      changed_when: true
+      check_mode: false
+      when:
+        - not raspi_config_enable_spi
+        - (raspi_config__check_spi.stdout | trim) == raspi_config__options.spi.true_output
+      tags:
+        - "raspi_config:interface:spi:disable"
+
+    - name: Verify SPI state (I4)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_spi
+      register: raspi_config__verify_spi
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_spi_enable is changed or raspi_config__change_spi_disable is changed
+      failed_when: >-
+        raspi_config__verify_spi.rc != 0 or
+        (raspi_config__verify_spi.stdout | trim) not in ['0', '1'] or
+        ((raspi_config__verify_spi.stdout | trim) == raspi_config__options.spi.true_output)
+        != (raspi_config_enable_spi | bool)
+      tags:
+        - "raspi_config:interface:spi:enable"
+        - "raspi_config:interface:spi:disable"
+  rescue:
+    - name: Report SPI failure (I4)
+      ansible.builtin.fail:
+        msg: >-
+          Option I4 SPI failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
+      tags:
+        - "raspi_config:interface:spi:enable"
+        - "raspi_config:interface:spi:disable"
 
 # "I5 I2C" "Enable/disable automatic loading of I2C kernel module" \
-- name: Get current I2C status
-  ansible.builtin.command: raspi-config nonint get_i2c
-  changed_when: false
-  register: i2c_status
+- name: I5 I2C
   tags:
-  - raspi_config:interface:i2c
-  - raspi_config:interface:i2c:enable
-  - raspi_config:interface:i2c:disable
+    - "raspi_config:interface:i2c"
+  block:
+    - name: Read I2C state (I5)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_i2c
+      register: raspi_config__check_i2c
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_i2c.rc != 0 or
+        (raspi_config__check_i2c.stdout | trim) not in ['0', '1']
+      tags:
+        - "raspi_config:interface:i2c:enable"
+        - "raspi_config:interface:i2c:disable"
 
-- name: Enable I2C support
-  ansible.builtin.command: raspi-config nonint do_i2c 0
-  changed_when: i2c_status.stdout|int == 1
-  when: raspi_config_enable_i2c
-  tags:
-  - raspi_config:interface:i2c
-  - raspi_config:interface:i2c:enable
+    - name: Enable I2C (I5)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_i2c', '0'] }}
+      register: raspi_config__change_i2c_enable
+      changed_when: true
+      check_mode: false
+      when:
+        - raspi_config_enable_i2c
+        - (raspi_config__check_i2c.stdout | trim) != raspi_config__options.i2c.true_output
+      tags:
+        - "raspi_config:interface:i2c:enable"
 
-- name: Disable I2C support
-  ansible.builtin.command: raspi-config nonint do_i2c 1
-  changed_when: i2c_status.stdout|int == 0
-  when: not raspi_config_enable_i2c
-  tags:
-  - raspi_config:interface:i2c
-  - raspi_config:interface:i2c:disable
+    - name: Disable I2C (I5)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_i2c', '1'] }}
+      register: raspi_config__change_i2c_disable
+      changed_when: true
+      check_mode: false
+      when:
+        - not raspi_config_enable_i2c
+        - (raspi_config__check_i2c.stdout | trim) == raspi_config__options.i2c.true_output
+      tags:
+        - "raspi_config:interface:i2c:disable"
+
+    - name: Verify I2C state (I5)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_i2c
+      register: raspi_config__verify_i2c
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_i2c_enable is changed or raspi_config__change_i2c_disable is changed
+      failed_when: >-
+        raspi_config__verify_i2c.rc != 0 or
+        (raspi_config__verify_i2c.stdout | trim) not in ['0', '1'] or
+        ((raspi_config__verify_i2c.stdout | trim) == raspi_config__options.i2c.true_output)
+        != (raspi_config_enable_i2c | bool)
+      tags:
+        - "raspi_config:interface:i2c:enable"
+        - "raspi_config:interface:i2c:disable"
+  rescue:
+    - name: Report I2C failure (I5)
+      ansible.builtin.fail:
+        msg: >-
+          Option I5 I2C failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
+      tags:
+        - "raspi_config:interface:i2c:enable"
+        - "raspi_config:interface:i2c:disable"
 
 # "I6 Serial Port" "Enable/disable shell messages on the serial connection" \
 - name: Get current Serial Port status
@@ -191,29 +356,84 @@
   - raspi_config:interface:serial_port:disable
 
 # "I7 1-Wire" "Enable/disable one-wire interface" \
-- name: Get current 1-Wire status
-  ansible.builtin.command: raspi-config nonint get_onewire
-  changed_when: false
-  register: one_wire_status
+- name: I7 1-Wire
   tags:
-  - raspi_config:interface:one_wire
-  - raspi_config:interface:one_wire:enable
-  - raspi_config:interface:one_wire:disable
+    - "raspi_config:interface:one_wire"
+  block:
+    - name: Read 1-Wire state (I7)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_onewire
+      register: raspi_config__check_one_wire
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_one_wire.rc != 0 or
+        (raspi_config__check_one_wire.stdout | trim) not in ['0', '1']
+      tags:
+        - "raspi_config:interface:one_wire:enable"
+        - "raspi_config:interface:one_wire:disable"
 
-- name: Enable 1-Wire support
-  ansible.builtin.command: raspi-config nonint do_onewire 0
-  changed_when: one_wire_status.stdout|int == 1
-  notify: Reboot
-  when: raspi_config_enable_one_wire
-  tags:
-  - raspi_config:interface:one_wire
-  - raspi_config:interface:one_wire:enable
+    - name: Enable 1-Wire (I7)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_onewire', '0'] }}
+      register: raspi_config__change_one_wire_enable
+      changed_when: true
+      check_mode: false
+      notify: Reboot
+      when:
+        - raspi_config_enable_one_wire
+        - (raspi_config__check_one_wire.stdout | trim) != raspi_config__options.one_wire.true_output
+      tags:
+        - "raspi_config:interface:one_wire:enable"
 
-- name: Disable 1-Wire support
-  ansible.builtin.command: raspi-config nonint do_onewire 1
-  changed_when: one_wire_status.stdout|int == 0
-  notify: Reboot
-  when: not raspi_config_enable_one_wire
-  tags:
-  - raspi_config:interface:one_wire
-  - raspi_config:interface:one_wire:disable
+    - name: Disable 1-Wire (I7)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_onewire', '1'] }}
+      register: raspi_config__change_one_wire_disable
+      changed_when: true
+      check_mode: false
+      notify: Reboot
+      when:
+        - not raspi_config_enable_one_wire
+        - (raspi_config__check_one_wire.stdout | trim) == raspi_config__options.one_wire.true_output
+      tags:
+        - "raspi_config:interface:one_wire:disable"
+
+    - name: Verify 1-Wire state (I7)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_onewire
+      register: raspi_config__verify_one_wire
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_one_wire_enable is changed or raspi_config__change_one_wire_disable is changed
+      failed_when: >-
+        raspi_config__verify_one_wire.rc != 0 or
+        (raspi_config__verify_one_wire.stdout | trim) not in ['0', '1'] or
+        ((raspi_config__verify_one_wire.stdout | trim) == raspi_config__options.one_wire.true_output)
+        != (raspi_config_enable_one_wire | bool)
+      tags:
+        - "raspi_config:interface:one_wire:enable"
+        - "raspi_config:interface:one_wire:disable"
+  rescue:
+    - name: Report 1-Wire failure (I7)
+      ansible.builtin.fail:
+        msg: >-
+          Option I7 1-Wire failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
+      tags:
+        - "raspi_config:interface:one_wire:enable"
+        - "raspi_config:interface:one_wire:disable"

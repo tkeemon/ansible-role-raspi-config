@@ -11,6 +11,10 @@
     "3.2 Write property test for preflight classification": {
       "status": "passed",
       "lastRunTimestamp": 1793503171996
+    },
+    "5.2 Write property test for deprecation warnings": {
+      "status": "passed",
+      "lastRunTimestamp": 1793503670745
     }
   },
   "executionHistory": {
@@ -160,6 +164,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793502974040
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503546425
       }
     ],
     "3.3 Write unit tests for preflight order and read-only behaviour": [
@@ -167,6 +176,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501593805
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503554534
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503678748
       }
     ],
     "4.1 Add the validation predicates to `vars/main.yml`": [
@@ -196,6 +215,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793502971555
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503543727
       }
     ],
     "4.3 Write property test for enumeration, boolean, range, and per-model validation": [
@@ -203,6 +227,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501593966
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503879794
       }
     ],
     "4.4 Write property test for hostname validation": [
@@ -210,6 +239,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594015
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503880206
       }
     ],
     "4.5 Write property test for Wireless LAN validation": [
@@ -217,6 +251,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594058
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503881030
       }
     ],
     "4.6 Write property test for reference-file validation": [
@@ -224,6 +263,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594107
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503882053
       }
     ],
     "4.7 Write property test for proxy validation": [
@@ -231,6 +275,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594148
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503882792
       }
     ],
     "4.8 Write property test for renamed variables": [
@@ -262,6 +311,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594289
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503554929
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503679797
       }
     ],
     "6.1 Rewrite `handlers/main.yml`": [
@@ -308,6 +367,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793502974849
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503547337
       }
     ],
     "6.4 Write unit tests for first-boot removal": [
@@ -315,6 +379,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594474
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503555673
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503680565
       }
     ],
     "7.1 Rewrite `tasks/main.yml`": [
@@ -327,6 +401,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793502971866
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503544580
       }
     ],
     "7.2 Remove obsolete Options, placeholder tasks, and stale comments from the six Submenu_Files": [
@@ -356,6 +435,11 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793502972977
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503545601
       }
     ],
     "8.1 Convert S1 Wireless LAN in `tasks/system.yml`": [
@@ -363,6 +447,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501594721
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503685506
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503873051
       }
     ],
     "8.2 Convert S3 Password in `tasks/system.yml`": [
@@ -419,6 +513,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501595091
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503685618
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503873476
       }
     ],
     "9.2 Convert D3 VNC Resolution in `tasks/display.yml`": [
@@ -440,6 +544,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501595257
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503686715
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503874489
       }
     ],
     "9.5 Replace the broken serial tasks with I6a `serial_console` and I6b `serial_hardware` in `tasks/interface.yml`": [
@@ -454,6 +568,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501595350
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503687513
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503875534
       }
     ],
     "10.2 Convert P2 Overlay File System in `tasks/performance.yml`": [
@@ -475,6 +599,16 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793501595490
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503688415
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503876338
       }
     ],
     "10.5 Convert L2 Time zone in `tasks/localization.yml`": [
@@ -874,6 +1008,34 @@
         "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
         "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
         "timestamp": 1793502967479
+      }
+    ],
+    "7. Phase 1: Rewire `tasks/main.yml`, remove obsolete Options, and add the reference Option": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503545663
+      }
+    ],
+    "3. Phase 1: Implement preflight checks": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503678791
+      }
+    ],
+    "5. Phase 1: Implement deprecation warnings": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503679847
+      }
+    ],
+    "6. Phase 1: Implement the reboot handler chain and first-boot prompt removal": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793503680647
       }
     ]
   }

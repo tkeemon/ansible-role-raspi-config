@@ -1,17 +1,67 @@
 ---
 # "L1 Locale" "Configure language and regional settings" \
-- name: Check current locale
-  ansible.builtin.command: "echo $LANG"
-  register: current_lang
-  changed_when: false
+# The state is the LANG value in /etc/default/locale, not the connection
+# environment. A missing file or a missing LANG line reads as "" (absent), which
+# never equals the desired value because the block is skipped when it is "".
+# Block tag only: L1 is not boolean, so inner tasks carry the base tag alone.
+- name: L1 Locale
+  when: raspi_config_locale != ''
+  vars:
+    raspi_config__locale_regex: '(?m)^LANG="?([^"\n]*)"?$'
+    raspi_config__current_locale: >-
+      {{ (raspi_config__check_locale.content | default('') | b64decode
+      | regex_findall(raspi_config__locale_regex) | first) | default('') }}
   tags:
-  - 'raspi_config:localization:locale'
-  
-- name: Update locale
-  ansible.builtin.command: raspi-config nonint do_change_locale {{ raspi_config_locale }}
-  changed_when: current_lang.stdout != raspi_config_locale
-  tags:
-  - 'raspi_config:localization:locale'
+    - "raspi_config:localization:locale"
+  block:
+    - name: Read locale (L1)
+      ansible.builtin.slurp:
+        src: /etc/default/locale
+      register: raspi_config__check_locale
+      check_mode: false
+      failed_when:
+        - raspi_config__check_locale.content is not defined
+        - "'file not found' not in (raspi_config__check_locale.msg | default(''))"
+      tags:
+        - "raspi_config:localization:locale"
+
+    - name: Change locale (L1)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_change_locale', raspi_config_locale] }}
+      register: raspi_config__change_locale
+      changed_when: true
+      check_mode: false
+      when: raspi_config__current_locale != raspi_config_locale
+      tags:
+        - "raspi_config:localization:locale"
+
+    - name: Read locale again (L1)
+      ansible.builtin.slurp:
+        src: /etc/default/locale
+      register: raspi_config__verify_locale
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_locale is changed
+      failed_when: >-
+        raspi_config__verify_locale.content is not defined or
+        ((raspi_config__verify_locale.content | b64decode
+        | regex_findall(raspi_config__locale_regex) | first | default(''))
+        != raspi_config_locale)
+      tags:
+        - "raspi_config:localization:locale"
+  rescue:
+    - name: Report locale failure (L1)
+      ansible.builtin.fail:
+        msg: >-
+          Option L1 Locale failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default(ansible_failed_result.msg | default('')) }}
+      tags:
+        - "raspi_config:localization:locale"
 
 # "L2 Timezone" "Configure time zone" \
 

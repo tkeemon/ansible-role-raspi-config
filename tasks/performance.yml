@@ -1,11 +1,91 @@
 ---
 # "P1 Overclock" "Configure CPU overclocking" \
-- name: Set overclock settings {{ raspi_config_overclock_settings }}
-  ansible.builtin.command: raspi-config nonint do_overclock {{ raspi_config_overclock_settings }}
-  notify: Reboot
-  when: rpi_model.stdout|int == 1 or rpi_model.stdout|int == 2
-  tags: 
-  - raspi_config:performance:overclock
+# Check-then-change Option with a Model_Gate (Pi_Model 1 and 2). The Check_Task
+# prints arm_freq in MHz, or 0 when config.txt has no arm_freq entry (profile
+# None). The state rule maps arm_freq to a profile through
+# raspi_config__overclock_profiles. An arm_freq that matches no profile of the
+# model fails the Option. The block carries only the base tag, which every inner
+# task inherits. This Option has no :enable or :disable tags.
+- name: Report P1 Overclock model gate
+  ansible.builtin.debug:
+    msg: >-
+      Option P1 Overclock (raspi_config_overclock_settings) applies to Pi_Model
+      {{ raspi_config__option_models.overclock | join(', ') }} only. The detected
+      Pi_Model is {{ raspi_config__pi_model }}, so the role skips the Option.
+  when:
+    - raspi_config__pi_model not in raspi_config__option_models.overclock
+    - raspi_config_overclock_settings != ''
+    - raspi_config_overclock_settings != raspi_config__fresh_install_defaults.raspi_config_overclock_settings
+  tags:
+    - "raspi_config:performance:overclock"
+
+- name: P1 Overclock
+  when:
+    - raspi_config__pi_model in raspi_config__option_models.overclock
+  vars:
+    # arm_freq (string) that the desired profile writes. None clears arm_freq,
+    # so the Check_Task prints 0.
+    raspi_config__overclock_target: >-
+      {{ '0' if raspi_config_overclock_settings == 'None'
+      else (raspi_config__overclock_profiles[raspi_config__pi_model][raspi_config_overclock_settings] | string) }}
+    # Outputs that map to a profile of this model: 0 (None) and each arm_freq.
+    raspi_config__overclock_known_outputs: >-
+      {{ ['0'] + (raspi_config__overclock_profiles[raspi_config__pi_model].values() | map('string') | list) }}
+  tags:
+    - "raspi_config:performance:overclock"
+  block:
+    - name: Read overclock state (P1)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_config_var
+          - arm_freq
+          - /boot/firmware/config.txt
+      register: raspi_config__check_overclock
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_overclock.rc != 0 or
+        (raspi_config__check_overclock.stdout | trim) not in raspi_config__overclock_known_outputs
+
+    - name: Set overclock profile (P1)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_overclock', raspi_config_overclock_settings] }}
+      register: raspi_config__change_overclock
+      changed_when: true
+      check_mode: false
+      notify: Reboot
+      when:
+        - (raspi_config__check_overclock.stdout | trim) != raspi_config__overclock_target
+
+    - name: Verify overclock state (P1)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_config_var
+          - arm_freq
+          - /boot/firmware/config.txt
+      register: raspi_config__verify_overclock
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - raspi_config__change_overclock is changed
+      failed_when: >-
+        raspi_config__verify_overclock.rc != 0 or
+        (raspi_config__verify_overclock.stdout | trim) != raspi_config__overclock_target
+  rescue:
+    - name: Report Overclock failure (P1)
+      ansible.builtin.fail:
+        msg: >-
+          Option P1 Overclock failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
 
 # "P3 Overlay File System" "Enable/disable read-only file system" \
 - name: Get current Overlay File System status

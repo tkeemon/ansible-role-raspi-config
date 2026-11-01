@@ -1,32 +1,95 @@
 ---
 
-# "D4 Screen Blanking" "Enable/disable screen blanking" \
-- name: Get current screen blanking state
-  ansible.builtin.command: raspi-config nonint get_blanking
-  register: blanking_state
-  changed_when: false
+# "D2 Screen Blanking" "Enable/disable screen blanking" \
+# Boolean check-then-change Option, same shape as I1 SSH. The functions are
+# per-user, so every task sets the user environment (SUDO_USER, SUDO_UID).
+- name: D2 Screen Blanking
   tags:
-  - raspi_config:display:screen_blanking
-  - raspi_config:display:screen_blanking:enable
-  - raspi_config:display:screen_blanking:disable
+    - "raspi_config:display:screen_blanking"
+  block:
+    - name: Read screen blanking state (D2)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_blanking
+      environment: "{{ raspi_config__user_env }}"
+      register: raspi_config__check_screen_blanking
+      changed_when: false
+      check_mode: false
+      failed_when: >-
+        raspi_config__check_screen_blanking.rc != 0 or
+        (raspi_config__check_screen_blanking.stdout | trim) not in ['0', '1']
+      tags:
+        - "raspi_config:display:screen_blanking:enable"
+        - "raspi_config:display:screen_blanking:disable"
 
-- name: Enable screen blanking
-  ansible.builtin.command: raspi-config nonint do_blanking 0
-  changed_when: blanking_state.stdout|int == 1
-  when: raspi_config_enable_screen_blanking
-  notify: Reboot
-  tags:
-  - raspi_config:display:screen_blanking
-  - raspi_config:display:screen_blanking:enable
+    - name: Enable screen blanking (D2)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_blanking', '0'] }}
+      environment: "{{ raspi_config__user_env }}"
+      register: raspi_config__change_screen_blanking_enable
+      changed_when: true
+      check_mode: false
+      notify: Reboot
+      when:
+        - raspi_config_enable_screen_blanking
+        - (raspi_config__check_screen_blanking.stdout | trim) != raspi_config__options.screen_blanking.true_output
+      tags:
+        - "raspi_config:display:screen_blanking:enable"
 
-- name: Disable screen blanking
-  ansible.builtin.command: raspi-config nonint do_blanking 1
-  changed_when: blanking_state.stdout|int == 0
-  when: not raspi_config_enable_screen_blanking
-  notify: Reboot
-  tags:
-  - raspi_config:display:screen_blanking
-  - raspi_config:display:screen_blanking:disable
+    - name: Disable screen blanking (D2)
+      ansible.builtin.command:
+        argv: >-
+          {{ raspi_config__noop_argv if ansible_check_mode
+          else ['raspi-config', 'nonint', 'do_blanking', '1'] }}
+      environment: "{{ raspi_config__user_env }}"
+      register: raspi_config__change_screen_blanking_disable
+      changed_when: true
+      check_mode: false
+      notify: Reboot
+      when:
+        - not raspi_config_enable_screen_blanking
+        - (raspi_config__check_screen_blanking.stdout | trim) == raspi_config__options.screen_blanking.true_output
+      tags:
+        - "raspi_config:display:screen_blanking:disable"
+
+    - name: Verify screen blanking state (D2)
+      ansible.builtin.command:
+        argv:
+          - raspi-config
+          - nonint
+          - get_blanking
+      environment: "{{ raspi_config__user_env }}"
+      register: raspi_config__verify_screen_blanking
+      changed_when: false
+      check_mode: false
+      when:
+        - not ansible_check_mode
+        - >-
+          raspi_config__change_screen_blanking_enable is changed or
+          raspi_config__change_screen_blanking_disable is changed
+      failed_when: >-
+        raspi_config__verify_screen_blanking.rc != 0 or
+        (raspi_config__verify_screen_blanking.stdout | trim) not in ['0', '1'] or
+        ((raspi_config__verify_screen_blanking.stdout | trim) == raspi_config__options.screen_blanking.true_output)
+        != (raspi_config_enable_screen_blanking | bool)
+      tags:
+        - "raspi_config:display:screen_blanking:enable"
+        - "raspi_config:display:screen_blanking:disable"
+  rescue:
+    - name: Report screen blanking failure (D2)
+      ansible.builtin.fail:
+        msg: >-
+          Option D2 Screen Blanking failed in '{{ ansible_failed_task.name }}':
+          rc={{ ansible_failed_result.rc | default('n/a') }}
+          stdout={{ ansible_failed_result.stdout | default('') }}
+          stderr={{ ansible_failed_result.stderr | default('') }}
+      tags:
+        - "raspi_config:display:screen_blanking:enable"
+        - "raspi_config:display:screen_blanking:disable"
 
 # "D5 VNC Resolution" "Set resolution for headless use" \
 - name: Get current VNC resolution

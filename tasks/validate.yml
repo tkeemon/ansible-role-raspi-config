@@ -229,13 +229,11 @@
       - raspi_config__user in (ansible_facts.getent_passwd | default({}))
     quiet: true
     fail_msg: >-
-      {% if raspi_config_user | default('') == '' -%}
-      raspi_config_user is empty and no account with UID 1000 exists on
-      {{ inventory_hostname }}. Set raspi_config_user to an existing account.
-      {%- else -%}
-      raspi_config_user {{ raspi_config_user | to_json }} does not name an
-      existing account on {{ inventory_hostname }}.
-      {%- endif %}
+      raspi_config_user {{ raspi_config_user | default('') | to_json }} does not
+      name an existing account on {{ inventory_hostname }}.
+      {{ 'With raspi_config_user empty, the role uses the account with UID 1000,
+      and none exists. Set raspi_config_user to an existing account.'
+      if raspi_config_user | default('') == '' else '' }}
 
 # 14. WLAN country (5.4, 5.9).
 - name: Read the WLAN country list
