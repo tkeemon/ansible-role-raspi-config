@@ -1,0 +1,708 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Update `meta/main.yml` and `requirements.txt`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593130
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501603414
+      }
+    ],
+    "1.2 Create the pytest and Hypothesis harness in `tests/unit/`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593217
+      },
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501603465
+      }
+    ],
+    "1.3 Write example tests for role metadata": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593333
+      }
+    ],
+    "2.1 Create the data tables in `vars/main.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593393
+      }
+    ],
+    "2.2 Rewrite `defaults/main.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593448
+      }
+    ],
+    "2.3 Write unit tests for defaults and data tables": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593527
+      }
+    ],
+    "2.4 Write property test for value maps": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593639
+      }
+    ],
+    "3.1 Create `tasks/preflight.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593683
+      }
+    ],
+    "3.2 Write property test for preflight classification": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593733
+      }
+    ],
+    "3.3 Write unit tests for preflight order and read-only behaviour": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593805
+      }
+    ],
+    "4.1 Add the validation predicates to `vars/main.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593857
+      }
+    ],
+    "4.2 Create `tasks/validate.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593908
+      }
+    ],
+    "4.3 Write property test for enumeration, boolean, range, and per-model validation": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501593966
+      }
+    ],
+    "4.4 Write property test for hostname validation": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594015
+      }
+    ],
+    "4.5 Write property test for Wireless LAN validation": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594058
+      }
+    ],
+    "4.6 Write property test for reference-file validation": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594107
+      }
+    ],
+    "4.7 Write property test for proxy validation": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594148
+      }
+    ],
+    "4.8 Write property test for renamed variables": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594197
+      }
+    ],
+    "5.1 Create `tasks/deprecations.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594248
+      }
+    ],
+    "5.2 Write property test for deprecation warnings": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594289
+      }
+    ],
+    "6.1 Rewrite `handlers/main.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594331
+      }
+    ],
+    "6.2 Create `tasks/first_boot.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594378
+      }
+    ],
+    "6.3 Write property test for the reboot handler decision": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594429
+      }
+    ],
+    "6.4 Write unit tests for first-boot removal": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594474
+      }
+    ],
+    "7.1 Rewrite `tasks/main.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594567
+      }
+    ],
+    "7.2 Remove obsolete Options, placeholder tasks, and stale comments from the six Submenu_Files": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594625
+      }
+    ],
+    "7.3 Implement I1 SSH as the reference check-then-change Option in `tasks/interface.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594672
+      }
+    ],
+    "8.1 Convert S1 Wireless LAN in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594721
+      }
+    ],
+    "8.2 Convert S3 Password in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594764
+      }
+    ],
+    "8.3 Convert S4 Hostname in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594805
+      }
+    ],
+    "8.4 Split S5 Boot and S6 Auto Login in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594854
+      }
+    ],
+    "8.5 Convert S7 Splash Screen in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594899
+      }
+    ],
+    "8.6 Convert S8 Power LED in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594947
+      }
+    ],
+    "8.7 Write property test for Wi-Fi and password input handling": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501594990
+      }
+    ],
+    "8.8 Write property test for auto login codes": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595040
+      }
+    ],
+    "9.1 Convert D2 Screen Blanking in `tasks/display.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595091
+      }
+    ],
+    "9.2 Convert D3 VNC Resolution in `tasks/display.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595163
+      }
+    ],
+    "9.3 Convert D4 Composite in `tasks/display.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595213
+      }
+    ],
+    "9.4 Convert I3 VNC, I4 SPI, I5 I2C, and I7 1-Wire in `tasks/interface.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595257
+      }
+    ],
+    "9.5 Replace the broken serial tasks with I6a `serial_console` and I6b `serial_hardware` in `tasks/interface.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595307
+      }
+    ],
+    "10.1 Convert P1 Overclock in `tasks/performance.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595350
+      }
+    ],
+    "10.2 Convert P2 Overlay File System in `tasks/performance.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595397
+      }
+    ],
+    "10.3 Convert P3 Fan in `tasks/performance.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595447
+      }
+    ],
+    "10.4 Fix L1 Locale in `tasks/localization.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595490
+      }
+    ],
+    "10.5 Convert L2 Time zone in `tasks/localization.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595532
+      }
+    ],
+    "10.6 Convert L4 WLAN Country in `tasks/localization.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595575
+      }
+    ],
+    "10.7 Convert A1 Expand Filesystem in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595621
+      }
+    ],
+    "10.8 Convert A2 Network Interface Names in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595665
+      }
+    ],
+    "10.9 Replace the Wayland tasks with A7 `desktop_backend` in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595716
+      }
+    ],
+    "10.10 Write property test for the overlay file system state rule": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595766
+      }
+    ],
+    "10.11 Write property test for the fan decision": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595815
+      }
+    ],
+    "10.12 Write property test for the expand file system decision": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595864
+      }
+    ],
+    "10.13 Write property test for desktop backend session names": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595912
+      }
+    ],
+    "10.14 Write property test for model gates and gate messages": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595956
+      }
+    ],
+    "11.1 Write property test for check output classification": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501595999
+      }
+    ],
+    "11.2 Write property test for boolean change decisions": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596049
+      }
+    ],
+    "11.3 Write property test for value change decisions": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596091
+      }
+    ],
+    "11.4 Write property test for reboot notification": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596139
+      }
+    ],
+    "11.5 Write property test for tag structure": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596180
+      }
+    ],
+    "11.6 Write property test for tag selection": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596232
+      }
+    ],
+    "11.7 Write property test for read-only Check_Tasks and inert Change_Tasks": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596272
+      }
+    ],
+    "11.8 Write property test for upstream function names": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596316
+      }
+    ],
+    "11.9 Write property test for secret handling": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596364
+      }
+    ],
+    "12. Checkpoint - Phase 1 complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596406
+      }
+    ],
+    "13.1 Implement S2 Audio in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596486
+      }
+    ],
+    "13.2 Implement S9 Browser in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596531
+      }
+    ],
+    "13.3 Implement S10 Admin Password in `tasks/system.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596573
+      }
+    ],
+    "13.4 Write property test for the audio output decision": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596616
+      }
+    ],
+    "13.5 Write unit tests for per-user environment": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596666
+      }
+    ],
+    "14. Checkpoint - Phase 2 (System) complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596712
+      }
+    ],
+    "15.1 Implement D1 Underscan in `tasks/display.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596749
+      }
+    ],
+    "15.2 Implement D5 4Kp60 HDMI in `tasks/display.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596796
+      }
+    ],
+    "15.3 Implement D6 Onscreen Keyboard and D7 Keyboard Output in `tasks/display.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596840
+      }
+    ],
+    "15.4 Write property test for the underscan per-output decision": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596879
+      }
+    ],
+    "16. Checkpoint - Phase 3 (Display) complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596922
+      }
+    ],
+    "17. Checkpoint - Decide how I2 Raspberry Pi Connect handles `remote_shell` (C5)": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501596963
+      }
+    ],
+    "18.1 Implement I2 in `tasks/interface.yml` following the decision from task 17": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597007
+      }
+    ],
+    "18.2 Write property test for the Raspberry Pi Connect decision": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597047
+      }
+    ],
+    "19. Checkpoint - Phase 4 (Interface) complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597090
+      }
+    ],
+    "20.1 Implement P4 USB Current in `tasks/performance.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597138
+      }
+    ],
+    "21. Checkpoint - Phase 5 (Performance) complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597183
+      }
+    ],
+    "22.1 Implement L3 Keyboard in `tasks/localization.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597223
+      }
+    ],
+    "23. Checkpoint - Phase 6 (Localisation) complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597272
+      }
+    ],
+    "24.1 Implement A3 Network Proxy in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597314
+      }
+    ],
+    "24.2 Implement A6 Beta Access in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597358
+      }
+    ],
+    "24.3 Implement A8 PCIe Speed in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597401
+      }
+    ],
+    "24.4 Implement A11 Logging in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597449
+      }
+    ],
+    "24.5 Implement A12 WLAN Power Save in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597494
+      }
+    ],
+    "24.6 Implement A13 Link-local Fallback in `tasks/advanced.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597540
+      }
+    ],
+    "24.7 Write property test for unmanaged Options and per-scheme proxy decisions": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597581
+      }
+    ],
+    "24.8 Write property test for configuration file parsers": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597625
+      }
+    ],
+    "25. Checkpoint - Phase 7 (Advanced) complete": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597675
+      }
+    ],
+    "26.1 Rewrite `README.md`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597730
+      }
+    ],
+    "26.2 Rewrite `.github/workflows/ci.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597790
+      }
+    ],
+    "26.3 Create the Test_Inventory and desired-state vars": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597834
+      }
+    ],
+    "26.4 Rewrite `tests/test.yml`": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597882
+      }
+    ],
+    "26.5 Write property test for role data, defaults, README, and test data consistency": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597927
+      }
+    ],
+    "26.6 Write unit tests for README sections, inventory shape, and leftover TODOs": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501597979
+      }
+    ],
+    "27. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "172c27c6-4c7d-49dc-bc91-059f2bc325f1",
+        "chatSessionId": "sess_e2fe6785-28ad-42c8-84ad-954eea5456ca",
+        "timestamp": 1793501598024
+      }
+    ]
+  }
+}
